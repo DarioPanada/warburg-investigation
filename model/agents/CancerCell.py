@@ -77,7 +77,7 @@ class CancerCell(Agent, object):
         if self.currentState == self.cellCycleOrder[
             -1] and self.progressInState == self.cellCycleLength[
             self.currentState]:
-            currentPos = self.environmentPositions[self.agentEnvName]
+            currentPos = self.environment_positions[self.agentEnvName]
             targetPos = None
 
             if len(model.environments[self.agentEnvName].grid[
@@ -97,7 +97,7 @@ class CancerCell(Agent, object):
                 # Creating new cancer cell and adding it at current position
                 # in the designated environment
                 c = CancerCell(model)
-                c.AddAgentToGrid(self.agentEnvName, targetPos, model)
+                c.add_agent_to_grid(self.agentEnvName, targetPos, model)
                 model.schedule.agentsToSchedule.add(c)
 
                 # Resetting current cell
@@ -120,7 +120,7 @@ class CancerCell(Agent, object):
             self.progressInState = self.progressInState + 1
 
     def step_main(self, model):
-        currentPos = self.environmentPositions[self.agentEnvName]
+        currentPos = self.environment_positions[self.agentEnvName]
         self.oxygenAtPos = model.environments[self.oxygenEnvName].grid[
             currentPos]
         self.glucoseAtPos = model.environments[self.glucoseEnvName].grid[

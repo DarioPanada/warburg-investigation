@@ -73,10 +73,10 @@ class CancerCellWatcher(Helper, object):
             model.output["cancerCellProperties"]["numWarburgCells"].append(
                 float(len(warburgCells)) / float(len(cancerCells)))
 
-            if model.currentEpoch % self.distributionInterval == 0 or \
-                    model.currentEpoch == model.epochs - 1:
+            if model.current_epoch % self.distributionInterval == 0 or \
+                    model.current_epoch == model.epochs - 1:
                 n, bins, patches = plt.hist(hifRates,
                                             bins=list(np.arange(0, 17, 1)))
                 model.output["cancerCellProperties"][
                     "HIFExpressionRatesDistributions"].append(
-                    {"n": n, "bins": bins, "epoch": model.currentEpoch})
+                    {"n": n, "bins": bins, "epoch": model.current_epoch})

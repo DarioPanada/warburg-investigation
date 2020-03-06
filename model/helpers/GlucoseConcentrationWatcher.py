@@ -37,7 +37,7 @@ class GlucoseConcentrationWatcher(Helper, object):
                        a.__class__.__name__ == self.cancerCellName and not
                        a.dead]
         if len(cancerCells) > 0:
-            coordinates = [a.environmentPositions[self.agentEnvName] for a in
+            coordinates = [a.environment_positions[self.agentEnvName] for a in
                            cancerCells]
             concentrations = [model.environments[self.glucoseEnvName].grid[c]
                               for c in coordinates]
@@ -48,12 +48,12 @@ class GlucoseConcentrationWatcher(Helper, object):
             model.output["cancerCellProperties"]["maxGlucose"].append(
                 max(concentrations))
 
-            if model.currentEpoch % self.interval == 0 or model.currentEpoch\
+            if model.current_epoch % self.interval == 0 or model.current_epoch\
                     == model.epochs - 1:
                 n, bins, patches = plt.hist(concentrations)
                 model.output["cancerCellProperties"][
                     "GlucoseDistributions"].append(
-                    {"n": n, "bins": bins, "epoch": model.currentEpoch})
+                    {"n": n, "bins": bins, "epoch": model.current_epoch})
         else:
             model.output["cancerCellProperties"]["avgGlucose"].append(0)
             model.output["cancerCellProperties"]["minGlucose"].append(0)

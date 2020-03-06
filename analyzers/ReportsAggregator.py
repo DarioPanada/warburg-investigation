@@ -711,7 +711,7 @@ def scatterNumEpochsFromReports(reports):
     points = []
 
     for report in reports.values():
-        points.append((report.properties["diffusion"]["dt"], report.currentEpoch))
+        points.append((report.properties["diffusion"]["dt"], report.current_epoch))
 
     points.sort(key=lambda x : x[0])
     plt.scatter([x[0] for x in points], [x[1] for x in points])

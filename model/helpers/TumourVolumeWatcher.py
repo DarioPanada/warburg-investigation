@@ -17,7 +17,7 @@ class TumourVolumeWatcher(Helper, object):
         model.output["maxDistances"] = []
 
     def step_epilogue(self, model):
-        cancerCellsCoords = [a.environmentPositions[self.agentEnvName] for a in
+        cancerCellsCoords = [a.environment_positions[self.agentEnvName] for a in
                              model.schedule.agents if
                              a.__class__.__name__ == self.cancerCellClassName]
         scoredCoords = [(sum(c), c) for c in cancerCellsCoords]

@@ -24,11 +24,11 @@ class OxygenSourceSinkWatcher(object, Helper):
     '''
 
     def step_epilogue(self, model):
-        if model.currentEpoch % self.interval == 0:
+        if model.current_epoch % self.interval == 0:
             sourceCoords = self.oxygenDiffusionHelper.sourceCoords
             sinkCoords = self.oxygenDiffusionHelper.sinkCoords
             model.output["oxygenGrids"].append({
-                "epoch": model.currentEpoch,
+                "epoch": model.current_epoch,
                 "sourceCoords": sourceCoords,
                 "sinkCoords": sinkCoords
             })

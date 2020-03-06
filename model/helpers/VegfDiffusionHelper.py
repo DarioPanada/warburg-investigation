@@ -104,7 +104,7 @@ class VegfDiffusionHelper(Helper):
                             "Vegf diffusion still has negative positions at "
                             "epochs %s despite killing all agents at such "
                             "coordinates..." % str(
-                        model.currentEpoch))
+                        model.current_epoch))
                 print(negativePositions)
                 model.exit = True
                 break

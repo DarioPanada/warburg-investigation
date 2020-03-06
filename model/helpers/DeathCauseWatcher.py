@@ -14,7 +14,7 @@ class DeathCauseWatcher(Helper, object):
 
     def step_epilogue(self, model):
 
-        if model.currentEpoch % self.interval == 0:
+        if model.current_epoch % self.interval == 0:
             cancerCells = [a for a in model.schedule.agents if
                            a.__class__.__name__ == "CancerCell" and a.dead]
 

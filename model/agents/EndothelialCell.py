@@ -64,7 +64,7 @@ class TipCell(EndothelialCell, object):
             self.cellAge = 0
 
             neigh = model.environments[self.agentEnv].getMooreNeighbourhood(
-                self.environmentPositions[self.agentEnv])
+                self.environment_positions[self.agentEnv])
 
             # get taf concentration at each neighbouring position
             neighToTaf = [(n, model.environments[self.vegfEnv].grid[n]) for n
@@ -88,7 +88,7 @@ class TipCell(EndothelialCell, object):
 
             # Create tip cell at old position1
             t = TrunkCell(model, radius=self.radius)
-            t.AddAgentToGrid(self.agentEnv, currentPosition, model)
+            t.add_agent_to_grid(self.agentEnv, currentPosition, model)
             model.schedule.agentsToSchedule.add(t)
 
     # A cell automatically sprouts if its radius is > 1
@@ -111,7 +111,7 @@ class TipCell(EndothelialCell, object):
     # best and sum(scores) = 1
     def rankNeighbours_(self, model):
         neigh = model.environments[self.agentEnv].getMooreNeighbourhood(
-            self.environmentPositions[self.agentEnv])
+            self.environment_positions[self.agentEnv])
 
         # get taf concentration at each neighbouring position
         neighToTaf = [(n, model.environments[self.vegfEnv].grid[n]) for n in

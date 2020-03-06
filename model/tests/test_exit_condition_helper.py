@@ -27,7 +27,7 @@ class testExitCondition(unittest.TestCase):
         model.schedule.helpers.append(ExitConditionWatcher([tickerCondition]))
 
         model.run()
-        self.assertEqual(model.currentEpoch, 4)
+        self.assertEqual(model.current_epoch, 4)
 
 if __name__ == '__main__':
     unittest.main()

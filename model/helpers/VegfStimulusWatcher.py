@@ -17,7 +17,7 @@ class VegfStimulusWatcher(Helper, object):
     def step_epilogue(self, model):
         edothelialCells = [a for a in model.schedule.agents if
                            a.__class__.__name__ in self.endothelialCellNames]
-        coordinates = [a.environmentPositions[self.agentEnvName] for a in
+        coordinates = [a.environment_positions[self.agentEnvName] for a in
                        edothelialCells]
         concentrations = [model.environments[self.vegfEnvName].grid[c] for c in
                           coordinates]

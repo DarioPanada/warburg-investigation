@@ -73,13 +73,13 @@ class testCancerCell(unittest.TestCase):
         envOxygen = NumericalGrid3D(oxygenEnvName, 10,10,10, model)
         envAgents = ObjectGrid3D(agentEnvName, 10,10,10, model)
         envOxygen.grid[(5,5,5)] = 1
-        a.AddAgentToGrid(agentEnvName, (5,5,5), model)
+        a.add_agent_to_grid(agentEnvName, (5,5,5), model)
 
         # Checking cancer cells die in low oxygen concentration
         a.stepMain(model)
         self.assertEqual(0, [a for a in envAgents.grid[(5,5,5)] if a.dead].__len__())
 
-        self.assertEqual((5,5,5), a.environmentPositions[agentEnvName])
+        self.assertEqual((5,5,5), a.environment_positions[agentEnvName])
 
         envOxygen.grid[(5,5,5)] = 0.00001
         a.stepMain(model)
