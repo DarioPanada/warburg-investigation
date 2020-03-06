@@ -1,28 +1,25 @@
 from random import randint
 
-from core.Environment import ObjectGrid3D, NumericalGrid3D
-from core.Model import Model
-from core.Toolkit import ModelPicklerLite
-from models.alpha04c.agents.CancerCell import CancerCell
-from models.alpha04c.agents.EndothelialCell import TrunkCell, TipCell
-from models.alpha04c.helpers.AgentCounter import AgentCounter
-from models.alpha04c.helpers.CancerCellWatcher import CancerCellWatcher
-from models.alpha04c.helpers.ExitConditionWatcher import ExitConditionWatcher
-from models.alpha04c.helpers.GlucoseConcentrationWatcher import GlucoseConcentrationWatcher
-from models.alpha04c.helpers.GlucoseDiffusionHelper import GlucoseDiffusionHelper
-from models.alpha04c.helpers.OxygenConcentrationWatcher import OxygenConcentrationWatcher
-from models.alpha04c.helpers.OxygenDiffusionHelper import OxygenDiffusionHelper
-from models.alpha04c.helpers.TumourVolumeWatcher import TumourVolumeWatcher
-from models.alpha04c.helpers.VegfDiffusionHelper import VegfDiffusionHelper
-from models.alpha04c.helpers.VegfStimulusWatcher import VegfStimulusWatcher
-from models.alpha04c.scratches.OxygenHIFRelationsGenerator import OxygenHIFRelationsGenerator
-from models.alpha04c.helpers.DrugDiffusionHelper import DrugDiffusionHelper
-from models.alpha04c.helpers.OxygenSourceSinkWatcher import OxygenSourceSinkWatcher
-from models.alpha04c.agents.HealthyCell import HealthyCell
-from models.alpha04c.helpers.DeathCauseWatcher import DeathCauseWatcher
+from panaxea.core.Environment import ObjectGrid3D, NumericalGrid3D
+from panaxea.core.Model import Model
+from model.agents.CancerCell import CancerCell
+from model.agents.EndothelialCell import TrunkCell, TipCell
+from model.helpers.AgentCounter import AgentCounter
+from model.helpers.CancerCellWatcher import CancerCellWatcher
+from model.helpers.ExitConditionWatcher import ExitConditionWatcher
+from model.helpers.GlucoseConcentrationWatcher import GlucoseConcentrationWatcher
+from model.helpers.GlucoseDiffusionHelper import GlucoseDiffusionHelper
+from model.helpers.OxygenConcentrationWatcher import OxygenConcentrationWatcher
+from model.helpers.OxygenDiffusionHelper import OxygenDiffusionHelper
+from model.helpers.TumourVolumeWatcher import TumourVolumeWatcher
+from model.helpers.VegfDiffusionHelper import VegfDiffusionHelper
+from model.helpers.VegfStimulusWatcher import VegfStimulusWatcher
+from model.utils.OxygenHIFRelationsGenerator import OxygenHIFRelationsGenerator
+from model.agents.HealthyCell import HealthyCell
+from model.helpers.DeathCauseWatcher import DeathCauseWatcher
 
 
-def generateProperties(properties_values):
+def generate_properties(properties_values):
 
     properties = dict()
 
@@ -167,8 +164,8 @@ def generateProperties(properties_values):
 
     return properties
 
-def generateModel(numEpochs=5, properties=dict(), verbose=False, defaultOxygenConc=1, numCancerCells=1,
-                  defaultGlucoseConc=1, endothelialRadius=1):
+def generate_model(numEpochs=5, properties=dict(), verbose=False, defaultOxygenConc=1, numCancerCells=1,
+                   defaultGlucoseConc=1, endothelialRadius=1):
 
     model = Model(numEpochs, verbose=verbose)
 

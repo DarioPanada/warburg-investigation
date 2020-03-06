@@ -1,12 +1,12 @@
 from collections import defaultdict
 
 import time
-from core.Steppables import Helper
+from panaxea.core.Steppables import Helper
 from fipy import Grid3D, CellVariable, TransientTerm, DiffusionTerm
 import numpy as np
 
 
-class OxygenDiffusionHelper(object, Helper):
+class OxygenDiffusionHelper(Helper):
     def __init__(self, model, cancerCellName="CancerCell"):
         self.agentEnvName = model.properties["envNames"]["agentEnvName"]
         self.oxygenEnvName = model.properties["envNames"]["oxygenEnvName"]

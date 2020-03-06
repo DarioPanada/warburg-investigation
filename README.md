@@ -16,3 +16,10 @@ You can run the setup.txt as `pip install -r requirements.txt`
 * **analyzers** - Contains functions to analyze model output;
 * **experiments** - Contains experiment csv files;
 * **model** - Contains the model files, including all agent classes, helpers, etc.
+* **out** - Contains experiment outputs;
+
+## Running the Code
+
+Your `PYTHONPATH` variable should point to the root directory of the project.
+
+Running Main.py will run all experiments sequentially, each experiment will create a directory in `out` where output will be stored.
