@@ -1,21 +1,24 @@
-from collections import defaultdict
-
-import time
-from panaxea.core.Steppables import Helper
-from fipy import Grid3D, CellVariable, TransientTerm, DiffusionTerm
 import numpy as np
+import time
+from fipy import Grid3D, CellVariable, TransientTerm, DiffusionTerm
+from panaxea.core.Steppables import Helper
 
 
 class OxygenDiffusionHelper(Helper):
     def __init__(self, model, cancerCellName="CancerCell"):
         self.agentEnvName = model.properties["envNames"]["agentEnvName"]
         self.oxygenEnvName = model.properties["envNames"]["oxygenEnvName"]
-        self.oxygenDiffusionCoeff = model.properties["diffusion"]["oxygenDiffusivity"]
+        self.oxygenDiffusionCoeff = model.properties["diffusion"][
+            "oxygenDiffusivity"]
         self.dt = model.properties["diffusion"]["dt"]
-        self.diffusionSolveIterations = model.properties["diffusion"]["diffusionSolveIterations"]
+        self.diffusionSolveIterations = model.properties["diffusion"][
+            "diffusionSolveIterations"]
         self.cancerCellName = cancerCellName
-        self.baseOxygenEmissionRate = model.properties["agents"]["endothelialCells"]["baseOxygenEmissionRate"]
-        self.minimunOxygenCancerCells = model.properties["agents"]["cancerCells"]["minimumOxygenConcentration"]
+        self.baseOxygenEmissionRate = \
+        model.properties["agents"]["endothelialCells"][
+            "baseOxygenEmissionRate"]
+        self.minimunOxygenCancerCells = \
+        model.properties["agents"]["cancerCells"]["minimumOxygenConcentration"]
 
     def getSourceSinkGrids_(self, phi, model):
         start = time.time()
@@ -26,45 +29,65 @@ class OxygenDiffusionHelper(Helper):
         agentGrid = model.environments["agentEnv"].grid
         phiTmp = np.reshape(phi._array, (xsize, ysize, zsize))
 
-        sourceGrid = CellVariable(name="source", mesh=Grid3D(dx=1, dy=1, dz=1, nx=xsize, ny=ysize, nz=zsize))
-        sinkGrid = CellVariable(name="sink", mesh=Grid3D(dx=1, dy=1, dz=1, nx=xsize, ny=ysize, nz=zsize))
+        sourceGrid = CellVariable(name="source",
+                                  mesh=Grid3D(dx=1, dy=1, dz=1, nx=xsize,
+                                              ny=ysize, nz=zsize))
+        sinkGrid = CellVariable(name="sink",
+                                mesh=Grid3D(dx=1, dy=1, dz=1, nx=xsize,
+                                            ny=ysize, nz=zsize))
 
         for coordinate, agents in agentGrid.items():
             if len(agents) == 0:
                 continue
 
-            concentrationAtPos = phiTmp[coordinate[0]][coordinate[1]][coordinate[2]]
+            concentrationAtPos = phiTmp[coordinate[0]][coordinate[1]][
+                coordinate[2]]
 
-
-            # Getting the current sink rate, defined as the sum of the sink rates of all non-dead and non-quiescent
+            # Getting the current sink rate, defined as the sum of the sink
+            # rates of all non-dead and non-quiescent
             # cancer cells and healthy cells at this position
-            sinkRate = sum([a.currentMetabolicRate for a in agents if (a.__class__.__name__ == "CancerCell"
-                and not (a.quiescent or a.dead)) or (a.__class__.__name__ == "HealthyCell" and not a.dead)])
+            sinkRate = sum([a.currentMetabolicRate for a in agents if
+                            (a.__class__.__name__ == "CancerCell"
+                             and not (a.quiescent or a.dead)) or (
+                                        a.__class__.__name__ ==
+                                        "HealthyCell" and not a.dead)])
 
-            # Getting the current source rate, defined as the sum of source rates of all Tip and Trunk cells at
+            # Getting the current source rate, defined as the sum of source
+            # rates of all Tip and Trunk cells at
             # this position
             sourceRate = sum(
-                [a.oxygenEmissionRate for a in agents if a.__class__.__name__ in ("TipCell", "TrunkCell")])
+                [a.oxygenEmissionRate for a in agents if
+                 a.__class__.__name__ in ("TipCell", "TrunkCell")])
 
-            # A pre-estimate of what the concentration at this position will be. This of course neglects diffusion,
-            # but can give an estimate of how we should regulate our sources and sinks
+            # A pre-estimate of what the concentration at this position will
+            # be. This of course neglects diffusion,
+            # but can give an estimate of how we should regulate our sources
+            # and sinks
             estimatedConcentration = concentrationAtPos + sourceRate - sinkRate
 
-            # If our estimated concentration is greater than our source rate, this means we really are outputting
-            # too much. At most, we want to achieve equilibrium between sources and environment, so we reduce our
-            # output rate. Of course, we can't reduce our output rate by more than the output rate itself
+            # If our estimated concentration is greater than our source
+            # rate, this means we really are outputting
+            # too much. At most, we want to achieve equilibrium between
+            # sources and environment, so we reduce our
+            # output rate. Of course, we can't reduce our output rate by
+            # more than the output rate itself
             if estimatedConcentration >= self.baseOxygenEmissionRate:
-                sourceRate -= min(sourceRate, estimatedConcentration - self.baseOxygenEmissionRate)
+                sourceRate -= min(sourceRate,
+                                  estimatedConcentration -
+                                  self.baseOxygenEmissionRate)
 
-            # If our estimate concentration is below zero, then our sinks should be reduced. We reduce them by the
-            # magnitude of the negative value, but of course we can't reduce them beyond the original value.
+            # If our estimate concentration is below zero, then our sinks
+            # should be reduced. We reduce them by the
+            # magnitude of the negative value, but of course we can't reduce
+            # them beyond the original value.
 
             if estimatedConcentration < 0:
-                sinkRate -= min(sinkRate - self.minimunOxygenCancerCells, abs(estimatedConcentration))
+                sinkRate -= min(sinkRate - self.minimunOxygenCancerCells,
+                                abs(estimatedConcentration))
 
-
-
-            i = np.ravel_multi_index([coordinate[0], coordinate[1], coordinate[2]], (xsize, ysize, zsize))
+            i = np.ravel_multi_index(
+                [coordinate[0], coordinate[1], coordinate[2]],
+                (xsize, ysize, zsize))
 
             sourceGrid.value[i] = sourceRate
             sinkGrid.value[i] = sinkRate
@@ -89,7 +112,8 @@ class OxygenDiffusionHelper(Helper):
         start = time.time()
         for i in range(self.diffusionSolveIterations):
             sourceGrid, sinkGrid = self.getSourceSinkGrids_(phi, model)
-            eq = TransientTerm() == DiffusionTerm(coeff=D) + sourceGrid - sinkGrid
+            eq = TransientTerm() == DiffusionTerm(
+                coeff=D) + sourceGrid - sinkGrid
 
             eq.solve(var=phi, dt=1)
             eq = TransientTerm() == DiffusionTerm(coeff=D)
@@ -100,14 +124,18 @@ class OxygenDiffusionHelper(Helper):
 
         return phi, nx, ny, nz
 
-    def stepPrologue(self, model):
+    def step_prologue(self, model):
 
         suitableSolution = False
         iteration = 1
         while not suitableSolution:
 
             if iteration > 2:
-                print("Oxygen diffusion still has negative positions at epochs %s despite killing all agents at such coordinates..." % str(model.currentEpoch))
+                print(
+                            "Oxygen diffusion still has negative positions "
+                            "at epochs %s despite killing all agents at such "
+                            "coordinates..." % str(
+                        model.currentEpoch))
                 print(negativePositions)
                 model.exit = True
                 break
@@ -131,13 +159,15 @@ class OxygenDiffusionHelper(Helper):
             if len(negativePositions) == 0:
                 suitableSolution = True
             else:
-                #print("Negative positions (Oxygen)")
-                #print(negativePositions)
+                # print("Negative positions (Oxygen)")
+                # print(negativePositions)
 
                 for p in negativePositions:
                     p = p[0]
-                    for a in [a for a in model.environments["agentEnv"].grid[(p[0], p[1], p[2])] if
-                              a.__class__.__name__ in ["HealthyCell", "CancerCell"]]:
+                    for a in [a for a in model.environments["agentEnv"].grid[
+                        (p[0], p[1], p[2])] if
+                              a.__class__.__name__ in ["HealthyCell",
+                                                       "CancerCell"]]:
                         a.dead = True
 
                         if a.__class__.__name__ == "CancerCell":
@@ -152,5 +182,5 @@ class OxygenDiffusionHelper(Helper):
         for x in range(nx):
             for y in range(ny):
                 for z in range(nz):
-                    model.environments[self.oxygenEnvName].grid[(x, y, z)] = cs[x][y][z]
-
+                    model.environments[self.oxygenEnvName].grid[(x, y, z)] = \
+                    cs[x][y][z]

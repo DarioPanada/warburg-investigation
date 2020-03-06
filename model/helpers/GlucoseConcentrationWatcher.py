@@ -1,20 +1,25 @@
 '''
-Keeps track of average, minimum and maximum glucose concentrations at cancer cells at each epoch
+Keeps track of average, minimum and maximum glucose concentrations at cancer
+cells at each epoch
 '''
-from core.Steppables import Helper
-import numpy as np
 import matplotlib
+import numpy as np
+from core.Steppables import Helper
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-class GlucoseConcentrationWatcher(Helper, object):
 
+class GlucoseConcentrationWatcher(Helper, object):
     '''
    :param model - The model object
-   :param cancerCellClassName - Name of the class used to represent cancer cells (defaults to CancerCell)
-   :param interval - A value n such that a snapshot of glucose concentrations will be taken every n epochs
+   :param cancerCellClassName - Name of the class used to represent cancer
+   cells (defaults to CancerCell)
+   :param interval - A value n such that a snapshot of glucose
+   concentrations will be taken every n epochs
    (defaults to 1)
    '''
+
     def __init__(self, model, cancerCellName="CancerCell", interval=1):
 
         model.output["cancerCellProperties"]["avgGlucose"] = list()
@@ -26,19 +31,28 @@ class GlucoseConcentrationWatcher(Helper, object):
         self.glucoseEnvName = model.properties["envNames"]["glucoseEnvName"]
         self.interval = interval
 
-    def stepEpilogue(self, model):
+    def step_epilogue(self, model):
 
-        cancerCells = [a for a in model.schedule.agents if a.__class__.__name__ == self.cancerCellName and not a.dead]
+        cancerCells = [a for a in model.schedule.agents if
+                       a.__class__.__name__ == self.cancerCellName and not
+                       a.dead]
         if len(cancerCells) > 0:
-            coordinates = [a.environmentPositions[self.agentEnvName] for a in cancerCells]
-            concentrations = [model.environments[self.glucoseEnvName].grid[c] for c in coordinates]
-            model.output["cancerCellProperties"]["avgGlucose"].append(np.mean(concentrations))
-            model.output["cancerCellProperties"]["minGlucose"].append(min(concentrations))
-            model.output["cancerCellProperties"]["maxGlucose"].append(max(concentrations))
+            coordinates = [a.environmentPositions[self.agentEnvName] for a in
+                           cancerCells]
+            concentrations = [model.environments[self.glucoseEnvName].grid[c]
+                              for c in coordinates]
+            model.output["cancerCellProperties"]["avgGlucose"].append(
+                np.mean(concentrations))
+            model.output["cancerCellProperties"]["minGlucose"].append(
+                min(concentrations))
+            model.output["cancerCellProperties"]["maxGlucose"].append(
+                max(concentrations))
 
-            if model.currentEpoch % self.interval == 0 or model.currentEpoch == model.epochs - 1:
+            if model.currentEpoch % self.interval == 0 or model.currentEpoch\
+                    == model.epochs - 1:
                 n, bins, patches = plt.hist(concentrations)
-                model.output["cancerCellProperties"]["GlucoseDistributions"].append(
+                model.output["cancerCellProperties"][
+                    "GlucoseDistributions"].append(
                     {"n": n, "bins": bins, "epoch": model.currentEpoch})
         else:
             model.output["cancerCellProperties"]["avgGlucose"].append(0)

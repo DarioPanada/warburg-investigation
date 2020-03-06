@@ -1,21 +1,21 @@
-from collections import defaultdict
-
-import time
-from panaxea.core.Steppables import Helper
-from fipy import Grid3D, CellVariable, TransientTerm, DiffusionTerm
 import numpy as np
+import time
+from fipy import Grid3D, CellVariable, TransientTerm, DiffusionTerm
+from panaxea.core.Steppables import Helper
 
 
 class VegfDiffusionHelper(Helper):
     def __init__(self, model, cancerCellName="CancerCell"):
         self.agentEnvName = model.properties["envNames"]["agentEnvName"]
         self.vegfEnvName = model.properties["envNames"]["vegfEnvName"]
-        self.vegfDiffusionCoeff = model.properties["diffusion"]["vegfDiffusivity"]
+        self.vegfDiffusionCoeff = model.properties["diffusion"][
+            "vegfDiffusivity"]
         self.dt = model.properties["diffusion"]["dt"]
-        self.diffusionSolveIterations = model.properties["diffusion"]["diffusionSolveIterations"]
+        self.diffusionSolveIterations = model.properties["diffusion"][
+            "diffusionSolveIterations"]
         self.cancerCellName = cancerCellName
-        self.maxVegf = model.properties["agents"]["cancerCells"]["maxVegfSecretionRate"]
-
+        self.maxVegf = model.properties["agents"]["cancerCells"][
+            "maxVegfSecretionRate"]
 
     def getSourceSinkGrids_(self, phi, model):
         start = time.time()
@@ -26,27 +26,39 @@ class VegfDiffusionHelper(Helper):
         agentGrid = model.environments["agentEnv"].grid
         phiTmp = np.reshape(phi._array, (xsize, ysize, zsize))
 
-        sourceGrid = CellVariable(name="source", mesh=Grid3D(dx=1, dy=1, dz=1, nx=xsize, ny=ysize, nz=zsize))
+        sourceGrid = CellVariable(name="source",
+                                  mesh=Grid3D(dx=1, dy=1, dz=1, nx=xsize,
+                                              ny=ysize, nz=zsize))
 
         for coordinate, agents in agentGrid.items():
             if len(agents) == 0:
                 continue
 
-            concentrationAtPos = phiTmp[coordinate[0]][coordinate[1]][coordinate[2]]
+            concentrationAtPos = phiTmp[coordinate[0]][coordinate[1]][
+                coordinate[2]]
 
-            sourceRate = sum([a.currentVegfSecretionRate for a in agents if (a.__class__.__name__ == "CancerCell"
-                                                                       and not (a.quiescent or a.dead))])
-            # A pre-estimate of what the concentration at this position will be. This of course neglects diffusion,
-            # but can give an estimate of how we should regulate our sources and sinks
+            sourceRate = sum([a.currentVegfSecretionRate for a in agents if
+                              (a.__class__.__name__ == "CancerCell"
+                               and not (a.quiescent or a.dead))])
+            # A pre-estimate of what the concentration at this position will
+            # be. This of course neglects diffusion,
+            # but can give an estimate of how we should regulate our sources
+            # and sinks
             estimatedConcentration = concentrationAtPos + sourceRate
 
-            # If our estimated concentration is greater than our maximum source rate, this means we really are outputting
-            # too much. At most, we want to achieve equilibrium between sources and environment, so we reduce our
-            # output rate. Of course, we can't reduce our output rate by more than the output rate itself
+            # If our estimated concentration is greater than our maximum
+            # source rate, this means we really are outputting
+            # too much. At most, we want to achieve equilibrium between
+            # sources and environment, so we reduce our
+            # output rate. Of course, we can't reduce our output rate by
+            # more than the output rate itself
             if estimatedConcentration >= self.maxVegf:
-                sourceRate -= min(sourceRate, estimatedConcentration - self.maxVegf)
+                sourceRate -= min(sourceRate,
+                                  estimatedConcentration - self.maxVegf)
 
-            i = np.ravel_multi_index([coordinate[0], coordinate[1], coordinate[2]], (xsize, ysize, zsize))
+            i = np.ravel_multi_index(
+                [coordinate[0], coordinate[1], coordinate[2]],
+                (xsize, ysize, zsize))
 
             sourceGrid.value[i] = sourceRate
 
@@ -81,14 +93,18 @@ class VegfDiffusionHelper(Helper):
 
         return phi, nx, ny, nz
 
-    def stepPrologue(self, model):
+    def step_prologue(self, model):
 
         suitableSolution = False
         iteration = 1
         while not suitableSolution:
 
             if iteration > 2:
-                print("Vegf diffusion still has negative positions at epochs %s despite killing all agents at such coordinates..." % str(model.currentEpoch))
+                print(
+                            "Vegf diffusion still has negative positions at "
+                            "epochs %s despite killing all agents at such "
+                            "coordinates..." % str(
+                        model.currentEpoch))
                 print(negativePositions)
                 model.exit = True
                 break
@@ -112,13 +128,15 @@ class VegfDiffusionHelper(Helper):
             if len(negativePositions) == 0:
                 suitableSolution = True
             else:
-                #print("Negative positions (Oxygen)")
-                #print(negativePositions)
+                # print("Negative positions (Oxygen)")
+                # print(negativePositions)
 
                 for p in negativePositions:
                     p = p[0]
-                    for a in [a for a in model.environments["agentEnv"].grid[(p[0], p[1], p[2])] if
-                              a.__class__.__name__ in ["HealthyCell", "CancerCell"]]:
+                    for a in [a for a in model.environments["agentEnv"].grid[
+                        (p[0], p[1], p[2])] if
+                              a.__class__.__name__ in ["HealthyCell",
+                                                       "CancerCell"]]:
                         a.dead = True
 
                         if a.__class__.__name__ == "CancerCell":
@@ -133,5 +151,5 @@ class VegfDiffusionHelper(Helper):
         for x in range(nx):
             for y in range(ny):
                 for z in range(nz):
-                    model.environments[self.vegfEnvName].grid[(x, y, z)] = cs[x][y][z]
-
+                    model.environments[self.vegfEnvName].grid[(x, y, z)] = \
+                    cs[x][y][z]
