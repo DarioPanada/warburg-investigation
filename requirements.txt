@@ -1,0 +1,14 @@
+PanaXea
+numpy
+pandas
+matplotlib
+pympler
+boto3
+awscli
+fipy
+pyhamcrest
+requests
+simplejson
+argparse
+setuptools
+pysparse
