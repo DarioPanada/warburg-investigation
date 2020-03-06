@@ -51,16 +51,13 @@ class CancerCell(Agent, object):
         self.pWarburgSwitch = cancerCellProps["pWarburgSwitch"]
         self.warburgSwitch = warburgSwitch
 
-        self.drugUptakeRate = cancerCellProps["drugUptakeRate"]
 
         self.dead = False
         self.quiescent = False
 
-        self.minDrugDosage = model.properties["drug"]["minDrugDosage"]
         self.drugAtPos = 0
 
         # To allow for different drug effects to be tested, this will be loaded as part of the config.
-        self.reactToDrug_ = cancerCellProps["drugReactFunction"]
         self.maxVegf = cancerCellProps["maxVegfSecretionRate"]
         self.age = 0
         self.minHIF = cancerCellProps["minHIF"]

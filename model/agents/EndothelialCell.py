@@ -15,7 +15,6 @@ class EndothelialCell(Agent, object):
         self.baseOxygenEmissionRate = model.properties["agents"]["endothelialCells"]["baseOxygenEmissionRate"]
         self.updateOxygenEmissionRate()
 
-        self.drugSecretionRate = model.properties["agents"]["endothelialCells"]["drugSecretionRate"]
 
         self.baseGlucoseSecretionRate = model.properties["agents"]["endothelialCells"]["glucoseSecretionRate"]
         self.updateGlucoseSecretionRate()

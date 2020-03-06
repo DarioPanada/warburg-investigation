@@ -1,7 +1,7 @@
 from core.Steppables import Agent
 
 
-class HealthyCell(Agent, object):
+class HealthyCell(Agent):
 
     def __init__(self, model):
         super(HealthyCell, self).__init__()
