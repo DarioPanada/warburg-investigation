@@ -13,5 +13,6 @@ A requirements.txt file is provided enumerating the dependencies. However, the i
 You can run the setup.txt as `pip install -r requirements.txt`
 
 ## Contents
-
+* **analyzers** - Contains functions to analyze model output;
+* **experiments** - Contains experiment csv files;
 * **model** - Contains the model files, including all agent classes, helpers, etc.
