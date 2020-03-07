@@ -2,7 +2,7 @@
 Keeps track of average vegf concentration at blood vessels
 '''
 import numpy as np
-from core.Steppables import Helper
+from panaxea.core.Steppables import Helper
 
 
 class VegfStimulusWatcher(Helper, object):

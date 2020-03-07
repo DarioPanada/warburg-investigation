@@ -1,6 +1,6 @@
 from cmath import sqrt
 
-from core.Steppables import Helper
+from panaxea.core.Steppables import Helper
 
 '''
 At each time-step, calculates an estimate of the tumour volume by looking at 

@@ -4,7 +4,7 @@ cells at each epoch
 '''
 import matplotlib
 import numpy as np
-from core.Steppables import Helper
+from panaxea.core.Steppables import Helper
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt

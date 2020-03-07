@@ -1,5 +1,5 @@
 import numpy as np
-from core.Steppables import Helper
+from panaxea.core.Steppables import Helper
 
 '''
 Used to track at each epoch what the CUMULATIVE cause of cancer cell death is.

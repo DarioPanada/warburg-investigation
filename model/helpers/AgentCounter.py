@@ -1,4 +1,4 @@
-from core.Steppables import Helper
+from panaxea.core.Steppables import Helper
 
 '''
 Counts number of agent types at each epoch and saves them to model output

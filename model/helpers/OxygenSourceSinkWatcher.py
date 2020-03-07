@@ -1,4 +1,4 @@
-from core.Steppables import Helper
+from panaxea.core.Steppables import Helper
 
 '''
 Will store the source/sink coordinates for oxygen as part of the model 

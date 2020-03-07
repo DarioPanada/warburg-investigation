@@ -1,4 +1,4 @@
-from core.Steppables import Helper
+from panaxea.core.Steppables import Helper
 
 '''
 Helper checks if any custom exit condition for the simulation is true and, 

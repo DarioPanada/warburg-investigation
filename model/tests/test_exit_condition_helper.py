@@ -1,7 +1,7 @@
 import unittest
 
 from core.Model import Model
-from core.Steppables import Agent
+from panaxea.core.Steppables import Agent
 from models.alpha04c.helpers.ExitConditionWatcher import ExitConditionWatcher
 
 class testExitCondition(unittest.TestCase):
