@@ -1,10 +1,8 @@
 FROM continuumio/anaconda2:5.3.0
 USER root
 RUN apt-get install git
-ENV PYTHONPATH /app #equivalent to saying export PYTHONPATH=/app
 ENV AWS_DEFAULT_REGION us-east-2
 
-# setting up venv
 
 RUN pip install --upgrade pip
 
