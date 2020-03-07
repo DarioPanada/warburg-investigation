@@ -9,7 +9,7 @@ ENV AWS_DEFAULT_REGION us-east-2
 RUN pip install --upgrade pip
 
 # Installing necessary packages
-RUN pip install --no-cache-dir --force-reinstall PanaXea
+RUN pip install --no-cache panaxea
 RUN pip install pympler
 RUN pip install boto3 
 RUN pip install awscli
