@@ -18,10 +18,10 @@ You can run the requirements.txt as `pip install -r requirements.txt`. _But_, th
 * **docker** - Contains the dockerfile with all dependencies for the code to run;
 * **experiments** - Contains experiment csv files;
 * **model** - Contains the model files, including all agent classes, helpers, etc.
-* **out** - Contains experiment outputs;
+* **requirements** - Contains experiment outputs;
 
 ## Running the Code
 
 Your `PYTHONPATH` variable should point to the root directory of the project.
 
-Running Main.py will run all experiments sequentially, each experiment will create a directory in `out` where output will be stored.
+Running Main.py will run all experiments sequentially, each experiment will create a directory in `requirements` where output will be stored.
