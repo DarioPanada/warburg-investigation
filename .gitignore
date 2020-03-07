@@ -208,3 +208,6 @@ dmypy.json
 .pyre/
 
 # End of https://www.gitignore.io/api/python,intellij+all,jupyternotebooks
+
+reports
+!reports/.gitkeep

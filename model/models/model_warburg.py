@@ -18,7 +18,7 @@ from model.helpers.TumourVolumeWatcher import TumourVolumeWatcher
 from model.helpers.VegfDiffusionHelper import VegfDiffusionHelper
 from model.helpers.VegfStimulusWatcher import VegfStimulusWatcher
 from model.utils.OxygenHIFRelationsGenerator import OxygenHIFRelationsGenerator
-
+from panaxea.toolkit.Toolkit import ModelPicklerLite
 
 def generate_properties(p):
     """
@@ -238,11 +238,11 @@ def generate_model(properties, numEpochs):
                     model.schedule.agents.add(c)
 
     # Adding diffusion helpers
-    model.schedule.helpers.append(GlucoseDiffusionHelper(model))
+    #model.schedule.helpers.append(GlucoseDiffusionHelper(model))
 
     odh = OxygenDiffusionHelper(model)
-    model.schedule.helpers.append(odh)
-    model.schedule.helpers.append(VegfDiffusionHelper(model))
+    #model.schedule.helpers.append(odh)
+    #model.schedule.helpers.append(VegfDiffusionHelper(model))
 
     snapshotInterval = 10
 
@@ -257,6 +257,7 @@ def generate_model(properties, numEpochs):
         GlucoseConcentrationWatcher(model, interval=snapshotInterval))
     model.schedule.helpers.append(
         DeathCauseWatcher(model, interval=snapshotInterval))
+    model.schedule.helpers.append(ModelPicklerLite(model.properties["outDir"]))
 
     def numAgentsExitCondition(model):
         return len([a for a in model.schedule.agents if
