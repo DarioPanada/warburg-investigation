@@ -1,4 +1,4 @@
-from core.Steppables import Agent
+from panaxea.core.Steppables import Agent
 from random import random
 
 
