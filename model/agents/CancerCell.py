@@ -1,5 +1,5 @@
 import random
-from core.Steppables import Agent
+from panaxea.core.Steppables import Agent
 from numpy.polynomial import Polynomial
 
 

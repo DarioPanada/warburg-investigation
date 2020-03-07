@@ -14,6 +14,7 @@ You can run the setup.txt as `pip install -r requirements.txt`
 
 ## Contents
 * **analyzers** - Contains functions to analyze model output;
+* **docker** - Contains the dockerfile with all dependencies for the code to run;
 * **experiments** - Contains experiment csv files;
 * **model** - Contains the model files, including all agent classes, helpers, etc.
 * **out** - Contains experiment outputs;
