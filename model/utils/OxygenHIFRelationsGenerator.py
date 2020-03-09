@@ -1,54 +1,79 @@
-from numpy.polynomial import Polynomial
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from numpy.polynomial import Polynomial
 
-'''
-This class allows to generate coefficients for function relating oxygen concentration to hif expression rates
-and hif expression rates to vegf secretion rate, proliferation rate and metabolic rate.
-'''
+matplotlib.use("Agg")
 
 
 class OxygenHIFRelationsGenerator():
-    '''
-    :param minHIF - Minimum HIF expression rates
-    :param maxHIF - Maximum HIF expression rates
-    :param ultraHypoxiaThreshold - A value x (0 < x < 1) such that oxygen concentrations 0 to x are considered ultra
-    hypoxia. (HIF expression rate at 0 will be 0 and at x will be maxHIF)
-    :param hypoxiaThreshold - A value x (ultraHypoxiaThreshold < hypoxiaThreshold < 1) such that HIF expression rates
-    at hypoxiaThreshold will 1. HIF Expression rate will decrease from a value maxHIF at ultraHypoxia threshold
-    until reaching minHIF at hypoxiaThreshold
-    :param enhancedHypoxicThreshold - Hypoxic threshold to be used during warburg metabolism
-    :param baseOxygenMetabolicRate - Oxygen uptake rate in normoxia
-    :param minPSynthesis - (Optional, defaults to 0), Lower value for probability of progressing into synthesis
-    '''
+    """
+    This class allows to generate coefficients for function relating oxygen
+    concentration to hif expression rates
+    and hif expression rates to vegf secretion rate, proliferation rate and
+    metabolic rate.
 
-    def __init__(self, minHIF, maxHIF, ultraHypoxiaThreshold, hypoxiaThreshold, enhancedHypoxicThreshold, baseOxygenMetabolicRate, minPSynthesis=0):
-        self.minHIF = minHIF
-        self.maxHIF = maxHIF
-        self.ultraHypoxiaThreshold = ultraHypoxiaThreshold
-        self.hypoxiaThreshold = hypoxiaThreshold
-        self.minPSynthesis = minPSynthesis
-        self.enhancedHypoxicThreshold = enhancedHypoxicThreshold
-        self.baseOxygenMetabolicRate = baseOxygenMetabolicRate
+    Parameters
+    ----------
+    min_hif : int
+        Minimum HIF expression rates
+    max_hif : int
+        Maximum HIF expression rates
+    ultra_hypoxia_threshold : float
+        A value x (0 < x < 1) such that oxygen
+        concentrations 0 to x are considered ultra
+        hypoxia. (HIF expression rate at 0 will be 0 and at x will be maxHIF)
+    hypoxia_threshold : float
+        A value x (ultraHypoxiaThreshold <
+        hypoxiaThreshold < 1) such that HIF expression rates
+        at hypoxiaThreshold will 1. HIF Expression rate will decrease from a
+        value maxHIF at ultraHypoxia threshold
+        until reaching minHIF at hypoxiaThreshold
+    enhanced_hypoxic_threshold : float
+        Hypoxic threshold to be used during
+        warburg metabolism
+    base_oxygen_metabolic_rate : float
+        oxygen uptake rate in normoxia
+    min_p_synthesis : float, Optional
+        Lower value for probability of progressing into synthesis. Defaults
+        to 0
+    """
 
-    '''
-    Returns coefficients for hif to metabolic rate. The domain of the function is [0, maxHIF].
-    :param degree - (Optional, defaults to 2) If degree > 2 function has to be changed to include more points)
-    :param render - (Optional, defaults to False) To be used for testing, if set to true plots the polynomials
-    :return Coefficients for hif to metabolic rate
-    '''
-    def getHifToMetabolicRate(self, degree=2, render=False):
+    def __init__(self, min_hif, max_hif, ultra_hypoxia_threshold,
+                 hypoxia_threshold,
+                 enhanced_hypoxic_threshold, base_oxygen_metabolic_rate,
+                 min_p_synthesis=0):
+        self.min_hif = min_hif
+        self.max_hif = max_hif
+        self.ultra_hypoxia_threshold = ultra_hypoxia_threshold
+        self.hypoxia_threshold = hypoxia_threshold
+        self.min_p_synthesis = min_p_synthesis
+        self.enhanced_hypoxic_threshold = enhanced_hypoxic_threshold
+        self.base_oxygen_metabolic_rate = base_oxygen_metabolic_rate
+
+    def get_hif_to_metabolic_rate(self, render=False):
+        """
+        Returns coefficients for hif to metabolic rate. The domain of the
+        function is [0, maxHIF].
+
+        Parameters
+        ----------
+        render : bool, optional
+            If set to true, will display the generated function
+
+        Returns
+        -------
+        list
+            Function coefficients
+        """
         points = [
-            (0,self.baseOxygenMetabolicRate),
-            (self.maxHIF,0)
+            (0, self.base_oxygen_metabolic_rate),
+            (self.max_hif, 0)
         ]
 
         xs = [p[0] for p in points]
         ys = [p[1] for p in points]
 
-
-        p = Polynomial.fit(xs,ys, 2)
+        p = Polynomial.fit(xs, ys, 2)
         # Getting data to reproduce polynomials, use of sort:
         # p = Polynomial(coef=[list of coeffs], domain=[xstart, xend])
 
@@ -61,25 +86,36 @@ class OxygenHIFRelationsGenerator():
             plt.title("Metabolic Rates across HIF Expression Rates")
             plt.show()
 
-        return [round(c,2) for c in list(p.coef)]
+        return [round(c, 2) for c in list(p.coef)]
 
-    '''
-    Returns coefficients for hif to probability of synthesis. The domain of the function is [0, maxHIF].
-    :param degree - (Optional, defaults to 2) If degree > 2 function has to be changed to include more points)
-    :param render - (Optional, defaults to False) To be used for testing, if set to true plots the polynomials
-    :return Coefficients for hif to p synthesis
-    '''
-    def getHifToPSynthesis(self, degree=1, render=False):
+    def get_hif_to_p_synthesis(self, degree=1, render=False):
+        """
+        Returns coefficients for hif to probability of synthesis. The domain
+        of
+        the function is [0, maxHIF].
+
+        Parameters
+        ----------
+        degree : int, optional
+            Degree of the generated polynomial. Optional, defaults to 1.
+        render : bool, optional
+            If set to true, will display the generated function
+
+        Returns
+        -------
+        list
+            Function coefficients
+        """
+
         points = [
-            (0,self.minPSynthesis),
-            (self.maxHIF,1)
+            (0, self.min_p_synthesis),
+            (self.max_hif, 1)
         ]
 
         xs = [p[0] for p in points]
         ys = [p[1] for p in points]
 
-
-        p = Polynomial.fit(xs,ys, degree)
+        p = Polynomial.fit(xs, ys, degree)
         # Getting data to reproduce polynomials, use of sort:
         # p = Polynomial(coef=[list of coeffs], domain=[xstart, xend]
 
@@ -92,18 +128,28 @@ class OxygenHIFRelationsGenerator():
             plt.title("Probability of Synthesis across HIF Expression Rates")
             plt.show()
 
-        return [round(c,2) for c in list(p.coef)]
+        return [round(c, 2) for c in list(p.coef)]
 
-    '''
-    Returns coefficients for hif to vegf relation. The domain of the function is [0, maxHIF].
-    :param degree - (Optional, defaults to 2) If degree > 2 function has to be changed to include more points)
-    :param render - (Optional, defaults to False) To be used for testing, if set to true plots the polynomials
-    :return Coefficients for hif to vegf
-    '''
-    def getHifToVegf(self, degree=2, render=False):
+    def get_hif_to_vegf(self, degree=2, render=False):
+        """
+        Returns coefficients for hif to probability of vegf secretion rate.
+        The domain of the function is [0, maxHIF].
+
+        Parameters
+        ----------
+        degree : int, optional
+            Degree of the generated polynomial. Optional, defaults to 2.
+        render : bool, optional
+            If set to true, will display the generated function
+
+        Returns
+        -------
+        list
+            Function coefficients
+        """
         points = [
             (0, 0),
-            (self.maxHIF, 1)
+            (self.max_hif, 1)
         ]
 
         xs = [p[0] for p in points]
@@ -124,30 +170,41 @@ class OxygenHIFRelationsGenerator():
 
         return [round(c, 2) for c in list(p.coef)]
 
-    '''
-    Returns coefficients for ultra-hypoxia and hypoxia polynomials to be used by cancer cells if the warburg
-    switch has been activated. At present, only hypoxic threshold is changed whereas ultra-hypoxic is left as-is.
-    :param degree - (Optional, defaults to 2) If degree > 2 function has to be changed to include more points)
-    :param render - (Optional, defaults to False) To be used for testing, if set to true plots the polynomials
-    :return ultraHypoxiaCoeffs - Coefficients of polynomial for ultra-hypoxia (as a list)
-    :return hypoxiaCoeffs - Coefficients of polynomial for hypoxia (as a list)
-    '''
-    def getOxygenToHifWarburg(self, degree=1, render=False):
+    def get_oxygen_to_hif_warburg(self, degree=1, render=False):
+        """
+        Returns coefficients for ultra-hypoxia and hypoxia polynomials to be
+        used by cancer cells if the warburg
+        switch has been activated. At present, only hypoxic threshold is
+        changed whereas ultra-hypoxic is left as-is.
+
+        Parameters
+        ----------
+        degree : int, optional
+            Degree of the generated polynomial. Optional, defaults to 1.
+        render : bool, optional
+            If set to true, will display the generated function
+
+        Returns
+        -------
+        list
+            Coefficients of polynomial for ultra-hypoxia
+        list
+            Coefficients of polynomial for hypoxia
+        """
         points = [
             # Points to 0.02
-            (self.ultraHypoxiaThreshold, self.maxHIF),
-            (self.enhancedHypoxicThreshold, self.minHIF),
+            (self.ultra_hypoxia_threshold, self.max_hif),
+            (self.enhanced_hypoxic_threshold, self.min_hif),
         ]
 
         xs = [p[0] for p in points]
         ys = [p[1] for p in points]
 
         # Fitting points between 0.02 and 0.2
-        xs= [xs[0], xs[1]]
-        ys= [ys[0], ys[1]]
+        xs = [xs[0], xs[1]]
+        ys = [ys[0], ys[1]]
 
         p = Polynomial.fit(xs, ys, degree)
-
 
         # Getting data to reproduce polynomials, use of sort:
         # p = Polynomial(coef=[list of coeffs], domain=[xstart, xend])
@@ -163,21 +220,34 @@ class OxygenHIFRelationsGenerator():
 
         return [round(c, 2) for c in list(p.coef)]
 
-    '''
-    Returns coefficients for ultra-hypoxia and hypoxia polynomials.
-    :param degree - (Optional, defaults to 2) If degree > 2 function has to be changed to include more points)
-    :param render - (Optional, defaults to False) To be used for testing, if set to true plots the polynomials
-    :return ultraHypoxiaCoeffs - Coefficients of polynomial for ultra-hypoxia (as a list)
-    :return hypoxiaCoeffs - Coefficients of polynomial for hypoxia (as a list)
-    '''
-    def getOxygenToHif(self, degree=1, render=False):
+    def get_oxygen_to_hif(self, degree=1, render=False):
+        """
+        Returns coefficients for ultra-hypoxia and hypoxia polynomials to be
+        used by cancer cells if the warburg
+        switch has *NOT* been activated. At present, only hypoxic threshold is
+        changed whereas ultra-hypoxic is left as-is.
+
+        Parameters
+        ----------
+        degree : int, optional
+            Degree of the generated polynomial. Optional, defaults to 1.
+        render : bool, optional
+            If set to true, will display the generated function
+
+        Returns
+        -------
+        list
+            Coefficients of polynomial for ultra-hypoxia
+        list
+            Coefficients of polynomial for hypoxia
+        """
         points = [
             # Points below 0.02
             (0, 0),
-            (self.ultraHypoxiaThreshold, self.maxHIF),
+            (self.ultra_hypoxia_threshold, self.max_hif),
             # Points to 0.02
-            (self.ultraHypoxiaThreshold, self.maxHIF),
-            (self.hypoxiaThreshold, 1),
+            (self.ultra_hypoxia_threshold, self.max_hif),
+            (self.hypoxia_threshold, 1),
         ]
 
         xs = [p[0] for p in points]
@@ -208,13 +278,5 @@ class OxygenHIFRelationsGenerator():
             plt.title("Oxygen Saturation to Relative HIF Expression Rates")
             plt.show()
 
-        return [round(c, 2) for c in list(pA.coef)], [round(c, 2) for c in list(pD.coef)]
-
-
-if __name__ == "__main__":
-    ohrg = OxygenHIFRelationsGenerator(1, 16, 0.02, 0.2, 0.4, 90)
-    #ohrg.getOxygenToHif(render=True)
-    #ohrg.getHifToVegf(render=True)
-    #ohrg.getHifToPSynthesis(render=True)
-    #ohrg.getHifToMetabolicRate(render=True)
-    #ohrg.getOxygenToHifWarburg(render=True)
+        return [round(c, 2) for c in list(pA.coef)], [round(c, 2) for c in
+                                                      list(pD.coef)]

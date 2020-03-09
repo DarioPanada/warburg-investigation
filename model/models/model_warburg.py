@@ -83,16 +83,16 @@ def generate_properties(p):
     }
 
     ohrg = OxygenHIFRelationsGenerator(
-        minHIF=p["minHIF"],
-        maxHIF=p["maxHIF"],
-        ultraHypoxiaThreshold=p["ultraHypoxicThreshold"],
-        hypoxiaThreshold=p["hypoxicThreshold"],
-        enhancedHypoxicThreshold=p["enhancedHypoxicThreshold"],
-        baseOxygenMetabolicRate=p["baseOxygenMetabolicRate"],
-        minPSynthesis=p["minPSynthesis"])
+        min_hif=p["minHIF"],
+        max_hif=p["maxHIF"],
+        ultra_hypoxia_threshold=p["ultraHypoxicThreshold"],
+        hypoxia_threshold=p["hypoxicThreshold"],
+        enhanced_hypoxic_threshold=p["enhancedHypoxicThreshold"],
+        base_oxygen_metabolic_rate=p["baseOxygenMetabolicRate"],
+        min_p_synthesis=p["minPSynthesis"])
 
-    ultra_hypoxia_coeffs, hypoxia_coeffs = ohrg.getOxygenToHif()
-    warburg_hypoxic_coeffs = ohrg.getOxygenToHifWarburg()
+    ultra_hypoxia_coeffs, hypoxia_coeffs = ohrg.get_oxygen_to_hif()
+    warburg_hypoxic_coeffs = ohrg.get_oxygen_to_hif_warburg()
     cancer_cells["pWarburgSwitch"] = p["pWarburgSwitch"]
     cancer_cells["baseHifRate"] = p["baseHifRate"]
     cancer_cells["minGlucoseUptakeRate"] = p["minGlucoseUptakeRate"]
@@ -107,13 +107,13 @@ def generate_properties(p):
         "ultraHypoxic": ultra_hypoxia_coeffs
     }
 
-    cancer_cells["hifToMetabolicRateCoeffs"] = ohrg.getHifToMetabolicRate()
+    cancer_cells["hifToMetabolicRateCoeffs"] = ohrg.get_hif_to_metabolic_rate()
 
     # Minimum probability of progressing into synthesis
     cancer_cells["minPSynthesis"] = p["minPSynthesis"]
-    cancer_cells["hifToProliferationRateCoeffs"] = ohrg.getHifToPSynthesis()
+    cancer_cells["hifToProliferationRateCoeffs"] = ohrg.get_hif_to_p_synthesis()
 
-    cancer_cells["hifToVegfSecretionRateCoeffs"] = ohrg.getHifToVegf()
+    cancer_cells["hifToVegfSecretionRateCoeffs"] = ohrg.get_hif_to_vegf()
 
     # Minimum oxygen concentration for survival
     cancer_cells["minimumOxygenConcentration"] = p[
