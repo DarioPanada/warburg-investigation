@@ -1,22 +1,21 @@
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 from panaxea.core.Steppables import Helper
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 
 plt.switch_backend("agg")
-'''
-Cancer cell watcher object. Collects average average hif expression rates, 
-vegf secretion rate, metabolic rate
-and pSynthesis. Creates appropriate keys in model.outputs[
-"cancerCellProperties"] to store such values
-at each epoch
-'''
 
 
 class CancerCellWatcher(Helper, object):
     '''
+    Cancer cell watcher object. Collects average average hif expression rates,
+    vegf secretion rate, metabolic rate
+    and pSynthesis. Creates appropriate keys in model.outputs[
+    "cancerCellProperties"] to store such values
+    at each epoch
+
     :param model - The model object
     :param cancerCellClassName - Name of the class used to represent cancer
     cells (defaults to CancerCell)
@@ -36,13 +35,13 @@ class CancerCellWatcher(Helper, object):
             "HIFExpressionRatesDistributions"] = []
         model.output["cancerCellProperties"]["numWarburgCells"] = []
 
-        self.cancerClassName = cancerCellClassName
-        self.distributionInterval = distributionInterval
+        self.cancer_class_name = cancerCellClassName
+        self.distribution_interval = distributionInterval
 
     def step_epilogue(self, model):
 
         cancerCells = [a for a in model.schedule.agents if
-                       a.__class__.__name__ == self.cancerClassName and not
+                       a.__class__.__name__ == self.cancer_class_name and not
                        a.dead]
 
         if len(cancerCells) == 0:
@@ -52,30 +51,30 @@ class CancerCellWatcher(Helper, object):
             model.output["cancerCellProperties"]["avgMetabolicRates"].append(0)
             model.output["cancerCellProperties"]["avgPSynthesis"].append(0)
         else:
-            hifRates = [a.currentHifRate for a in cancerCells]
+            hif_rates = [a.current_hif_rate for a in cancerCells]
             model.output["cancerCellProperties"]["avgHif"].append(
-                np.mean(hifRates))
+                np.mean(hif_rates))
 
-            vegfRates = [a.currentVegfSecretionRate for a in cancerCells]
+            vegf_rates = [a.current_vegf_secretion_rate for a in cancerCells]
             model.output["cancerCellProperties"]["avgVegf"].append(
-                np.mean(vegfRates))
+                np.mean(vegf_rates))
 
-            metabolicRates = [a.currentMetabolicRate for a in cancerCells]
+            metabolic_rates = [a.current_metabolic_rate for a in cancerCells]
             model.output["cancerCellProperties"]["avgMetabolicRates"].append(
-                np.mean(metabolicRates))
+                np.mean(metabolic_rates))
 
-            pSynthesis = [a.currentPSynthesis for a in cancerCells]
+            p_synthesis = [a.current_p_synthesis for a in cancerCells]
             model.output["cancerCellProperties"]["avgPSynthesis"].append(
-                np.mean(pSynthesis))
+                np.mean(p_synthesis))
 
             # Percentage of warburg cells
-            warburgCells = [c for c in cancerCells if c.warburgSwitch]
+            warburg_cells = [c for c in cancerCells if c.warburg_switch]
             model.output["cancerCellProperties"]["numWarburgCells"].append(
-                float(len(warburgCells)) / float(len(cancerCells)))
+                float(len(warburg_cells)) / float(len(cancerCells)))
 
-            if model.current_epoch % self.distributionInterval == 0 or \
+            if model.current_epoch % self.distribution_interval == 0 or \
                     model.current_epoch == model.epochs - 1:
-                n, bins, patches = plt.hist(hifRates,
+                n, bins, patches = plt.hist(hif_rates,
                                             bins=list(np.arange(0, 17, 1)))
                 model.output["cancerCellProperties"][
                     "HIFExpressionRatesDistributions"].append(
