@@ -474,7 +474,7 @@ def save_final_oxygen_hif_distributions(oxygen_distributions,
     plt.ylabel("Number of Cells (Percentage)")
     totalOxygen = total
 
-    concentrations_at_end = oxygen_distributions
+    concentrations_at_end = oxygen_distributions[-1]
     concentrations_zipped = [
         (concentrations_at_end["bins"][i], concentrations_at_end["n"][i]) for i
         in range(len(concentrations_at_end["bins"]) - 1)]
