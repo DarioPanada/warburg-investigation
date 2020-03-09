@@ -1,5 +1,6 @@
 from panaxea.core.Environment import ObjectGrid3D, NumericalGrid3D
 from panaxea.core.Model import Model
+from panaxea.toolkit.Toolkit import ModelPicklerLite
 from random import randint
 
 from model.agents.CancerCell import CancerCell
@@ -18,7 +19,7 @@ from model.helpers.TumourVolumeWatcher import TumourVolumeWatcher
 from model.helpers.VegfDiffusionHelper import VegfDiffusionHelper
 from model.helpers.VegfStimulusWatcher import VegfStimulusWatcher
 from model.utils.OxygenHIFRelationsGenerator import OxygenHIFRelationsGenerator
-from panaxea.toolkit.Toolkit import ModelPicklerLite
+
 
 def generate_properties(p):
     """
@@ -41,22 +42,22 @@ def generate_properties(p):
 
     properties = dict()
 
-    initialAgentSetup = dict()
+    initial_agent_setup = dict()
 
-    initialAgentSetup["numCancerCells"] = p["numCancerCells"]
-    initialAgentSetup["numEndothelialCells"] = p["numEndothelialCells"]
+    initial_agent_setup["numCancerCells"] = p["numCancerCells"]
+    initial_agent_setup["numEndothelialCells"] = p["numEndothelialCells"]
 
-    properties["initialAgentSetup"] = initialAgentSetup
+    properties["initialAgentSetup"] = initial_agent_setup
 
     # Environment properties, including names, etc.
-    envNames = dict()
-    envNames["agentEnvName"] = "agentEnv"
-    envNames["oxygenEnvName"] = "oxygenEnv"
-    envNames["vegfEnvName"] = "vegfEnv"
-    envNames["glucoseEnvName"] = "glucoseEnv"
-    envNames["drugEnvName"] = "drugEnv"
+    env_names = dict()
+    env_names["agentEnvName"] = "agentEnv"
+    env_names["oxygenEnvName"] = "oxygenEnv"
+    env_names["vegfEnvName"] = "vegfEnv"
+    env_names["glucoseEnvName"] = "glucoseEnv"
+    env_names["drugEnvName"] = "drugEnv"
 
-    properties["envNames"] = envNames
+    properties["env_names"] = env_names
 
     properties["envSize"] = p["envSize"]
 
@@ -71,73 +72,73 @@ def generate_properties(p):
         "M": p["M"]
     }
 
-    cancerCells = dict()
+    cancer_cells = dict()
 
-    cancerCells["HIFRange"] = [0.0, p["maxHIF"]]
+    cancer_cells["HIFRange"] = [0.0, p["maxHIF"]]
 
-    cancerCells["domains"] = {
+    cancer_cells["domains"] = {
         "ultraHypoxic": p["ultraHypoxicThreshold"],
         "warburgHypoxic": p["enhancedHypoxicThreshold"],
         "hypoxic": p["hypoxicThreshold"]
     }
 
-    ohrg = OxygenHIFRelationsGenerator(minHIF=p["minHIF"], maxHIF=p["maxHIF"],
-                                       ultraHypoxiaThreshold=
-                                       p["ultraHypoxicThreshold"],
-                                       hypoxiaThreshold=p["hypoxicThreshold"],
-                                       enhancedHypoxicThreshold=
-                                       p["enhancedHypoxicThreshold"],
-                                       baseOxygenMetabolicRate=
-                                       p["baseOxygenMetabolicRate"],
-                                       minPSynthesis=p["minPSynthesis"])
+    ohrg = OxygenHIFRelationsGenerator(
+        minHIF=p["minHIF"],
+        maxHIF=p["maxHIF"],
+        ultraHypoxiaThreshold=p["ultraHypoxicThreshold"],
+        hypoxiaThreshold=p["hypoxicThreshold"],
+        enhancedHypoxicThreshold=p["enhancedHypoxicThreshold"],
+        baseOxygenMetabolicRate=p["baseOxygenMetabolicRate"],
+        minPSynthesis=p["minPSynthesis"])
 
-    ultraHypoxiaCoeffs, hypoxiaCoeffs = ohrg.getOxygenToHif()
-    warburgHypoxicCoeffs = ohrg.getOxygenToHifWarburg()
-    cancerCells["pWarburgSwitch"] = p["pWarburgSwitch"]
-    cancerCells["baseHifRate"] = p["baseHifRate"]
-    cancerCells["minGlucoseUptakeRate"] = p["minGlucoseUptakeRate"]
-    cancerCells["maxGlucoseUptakeRate"] = p["maxGlucoseUptakeRate"]
-    cancerCells["minGlucoseWarburg"] = p["minGlucoseWarburg"]
-    cancerCells["minGlucoseNonWarburg"] = p["minGlucoseNonWarburg"]
-    cancerCells["minHIF"] = p["minHIF"]
+    ultra_hypoxia_coeffs, hypoxia_coeffs = ohrg.getOxygenToHif()
+    warburg_hypoxic_coeffs = ohrg.getOxygenToHifWarburg()
+    cancer_cells["pWarburgSwitch"] = p["pWarburgSwitch"]
+    cancer_cells["baseHifRate"] = p["baseHifRate"]
+    cancer_cells["minGlucoseUptakeRate"] = p["minGlucoseUptakeRate"]
+    cancer_cells["maxGlucoseUptakeRate"] = p["maxGlucoseUptakeRate"]
+    cancer_cells["minGlucoseWarburg"] = p["minGlucoseWarburg"]
+    cancer_cells["minGlucoseNonWarburg"] = p["minGlucoseNonWarburg"]
+    cancer_cells["minHIF"] = p["minHIF"]
 
-    cancerCells["oxygenToHifCoeffs"] = {
-        "hypoxic": hypoxiaCoeffs,
-        "warburg": warburgHypoxicCoeffs,
-        "ultraHypoxic": ultraHypoxiaCoeffs
+    cancer_cells["oxygenToHifCoeffs"] = {
+        "hypoxic": hypoxia_coeffs,
+        "warburg": warburg_hypoxic_coeffs,
+        "ultraHypoxic": ultra_hypoxia_coeffs
     }
 
-    cancerCells["hifToMetabolicRateCoeffs"] = ohrg.getHifToMetabolicRate()
+    cancer_cells["hifToMetabolicRateCoeffs"] = ohrg.getHifToMetabolicRate()
 
     # Minimum probability of progressing into synthesis
-    cancerCells["minPSynthesis"] = p["minPSynthesis"]
-    cancerCells["hifToProliferationRateCoeffs"] = ohrg.getHifToPSynthesis()
+    cancer_cells["minPSynthesis"] = p["minPSynthesis"]
+    cancer_cells["hifToProliferationRateCoeffs"] = ohrg.getHifToPSynthesis()
 
-    cancerCells["hifToVegfSecretionRateCoeffs"] = ohrg.getHifToVegf()
+    cancer_cells["hifToVegfSecretionRateCoeffs"] = ohrg.getHifToVegf()
 
     # Minimum oxygen concentration for survival
-    cancerCells["minimumOxygenConcentration"] = p["minimumOxygenConcentration"]
-    cancerCells["maxVegfSecretionRate"] = 10
+    cancer_cells["minimumOxygenConcentration"] = p[
+        "minimumOxygenConcentration"]
+    cancer_cells["maxVegfSecretionRate"] = 10
 
-    agents["cancerCells"] = cancerCells
+    agents["cancer_cells"] = cancer_cells
 
     agents["healthyTissues"] = {
         "oxygenUptakeRate": p["healthyTissueOxygenUptakeRate"]
     }
 
-    endothelialCells = dict()
+    endothelial_cells = dict()
 
-    agents["endothelialCells"] = endothelialCells
+    agents["endothelial_cells"] = endothelial_cells
 
     # Minimum vegf concentration to sprout angiogenesis
-    endothelialCells["minimumVegfConcentration"] = \
+    endothelial_cells["minimumVegfConcentration"] = \
         p["minimumVegfConcentration"]
     # Minimum age of endothelial cells for sprouting
-    endothelialCells["divisionDelay"] = p["endothelialDivisionDelay"]
+    endothelial_cells["divisionDelay"] = p["endothelialDivisionDelay"]
     # Measured in mmHg
-    endothelialCells["baseOxygenEmissionRate"] = p["baseOxygenEmissionRate"]
+    endothelial_cells["baseOxygenEmissionRate"] = p["baseOxygenEmissionRate"]
 
-    endothelialCells["glucoseSecretionRate"] = p["glucoseSecretionRate"]
+    endothelial_cells["glucoseSecretionRate"] = p["glucoseSecretionRate"]
 
     properties["agents"] = agents
 
@@ -180,17 +181,33 @@ def generate_model(properties, numEpochs):
     xsize = ysize = zsize = model.properties["envSize"]
 
     # Adding environments
-    agentEnv = ObjectGrid3D(model.properties["envNames"]["agentEnvName"],
-                            xsize, ysize, zsize, model)
-    oxygenEnv = NumericalGrid3D(model.properties["envNames"]["oxygenEnvName"],
-                                xsize, ysize, zsize, model)
-    vegfEnv = NumericalGrid3D(model.properties["envNames"]["vegfEnvName"],
-                              xsize, ysize, zsize, model)
-    glucoseEnv = NumericalGrid3D(
-        model.properties["envNames"]["glucoseEnvName"], xsize, ysize, zsize,
+    ObjectGrid3D(
+        model.properties["envNames"]["agentEnvName"],
+        xsize, ysize, zsize, model)
+    NumericalGrid3D(
+        model.properties["envNames"]["oxygenEnvName"],
+        xsize,
+        ysize,
+        zsize,
         model)
-    drugEnv = NumericalGrid3D(model.properties["envNames"]["drugEnvName"],
-                              xsize, ysize, zsize, model)
+    NumericalGrid3D(
+        model.properties["envNames"]["vegfEnvName"],
+        xsize,
+        ysize,
+        zsize,
+        model)
+    NumericalGrid3D(
+        model.properties["envNames"]["glucoseEnvName"],
+        xsize,
+        ysize,
+        zsize,
+        model)
+    NumericalGrid3D(
+        model.properties["envNames"]["drugEnvName"],
+        xsize,
+        ysize,
+        zsize,
+        model)
 
     hc = 0
     tc = 0
@@ -226,48 +243,49 @@ def generate_model(properties, numEpochs):
                     c = CancerCell(model)
 
                     state = ["G1", "S", "G2", "M"][randint(0, 3)]
-                    stateLength = \
-                    model.properties["agents"]["baseCellCycleLength"][state]
-                    progressInState = randint(0, stateLength - 1)
+                    state_length = \
+                        model.properties["agents"]["baseCellCycleLength"][
+                            state]
+                    progress_in_state = randint(0, state_length - 1)
 
                     c.currentState = state
-                    c.progressInState = progressInState
+                    c.progressInState = progress_in_state
 
                     c.add_agent_to_grid(model.properties["envNames"][
                                             "agentEnvName"], (x, y, z), model)
                     model.schedule.agents.add(c)
 
     # Adding diffusion helpers
-    #model.schedule.helpers.append(GlucoseDiffusionHelper(model))
+    model.schedule.helpers.append(GlucoseDiffusionHelper(model))
 
     odh = OxygenDiffusionHelper(model)
-    #model.schedule.helpers.append(odh)
-    #model.schedule.helpers.append(VegfDiffusionHelper(model))
+    model.schedule.helpers.append(odh)
+    model.schedule.helpers.append(VegfDiffusionHelper(model))
 
-    snapshotInterval = 10
+    snapshot_interval = 10
 
     model.schedule.helpers.append(AgentCounter(model))
     model.schedule.helpers.append(
-        CancerCellWatcher(model, distributionInterval=snapshotInterval))
+        CancerCellWatcher(model, distributionInterval=snapshot_interval))
     model.schedule.helpers.append(VegfStimulusWatcher(model))
     model.schedule.helpers.append(TumourVolumeWatcher(model))
     model.schedule.helpers.append(
-        OxygenConcentrationWatcher(model, interval=snapshotInterval))
+        OxygenConcentrationWatcher(model, interval=snapshot_interval))
     model.schedule.helpers.append(
-        GlucoseConcentrationWatcher(model, interval=snapshotInterval))
+        GlucoseConcentrationWatcher(model, interval=snapshot_interval))
     model.schedule.helpers.append(
-        DeathCauseWatcher(model, interval=snapshotInterval))
+        DeathCauseWatcher(model, interval=snapshot_interval))
     model.schedule.helpers.append(ModelPicklerLite(model.properties["outDir"]))
 
-    def numAgentsExitCondition(model):
+    def num_agents_exit_condition(model):
         return len([a for a in model.schedule.agents if
                     a.__class__.__name__ == "CancerCell"]) > 400000
 
-    def noCancerCells(model):
+    def no_cancer_cells(model):
         return len([c for c in model.schedule.agents if
                     c.__class__.__name__ == "CancerCell" and not c.dead]) == 0
 
     model.schedule.helpers.append(
-        ExitConditionWatcher([numAgentsExitCondition, noCancerCells]))
+        ExitConditionWatcher([num_agents_exit_condition, no_cancer_cells]))
 
     return model
