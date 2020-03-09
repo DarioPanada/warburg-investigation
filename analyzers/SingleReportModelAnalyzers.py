@@ -842,12 +842,13 @@ def get_hif_from_oxygen(cancer_cell, interval=10, render=False, out_path=None,
     """
     concentrations = np.arange(0, 200, interval)
     if not cancer_cell.warburg_switch:
-        hif_expressions = [cancer_cell.__calculate_hif_expression_rate_from_oxygen(c)
-                           for c in concentrations]
+        hif_expressions = [
+            cancer_cell.__calculate_hif_expression_rate_from_oxygen(c)
+            for c in concentrations]
     else:
         hif_expressions = [
-            cancer_cell.__calculate_hif_expression_rate_from_oxygen_warburg(c) for c
-            in concentrations]
+            cancer_cell.__calculate_hif_expression_rate_from_oxygen_warburg(c)
+            for c in concentrations]
 
     plt.figure()
     plt.scatter(concentrations, hif_expressions)
