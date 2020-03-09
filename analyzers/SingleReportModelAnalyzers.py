@@ -1,4 +1,7 @@
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+plt.switch_backend("agg")
 import numpy as np
 import os
 from panaxea.toolkit.Toolkit import depickle_from_lite
