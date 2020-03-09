@@ -439,7 +439,7 @@ def save_final_oxygen_hif_distributions(oxygen_distributions,
     fig = plt.figure()
     fig.add_subplot(1, 2, 1)
 
-    concentrations_at_end = hif_distributions
+    concentrations_at_end = hif_distributions[-1]
     concentrations_zipped = [
         (concentrations_at_end["bins"][i], concentrations_at_end["n"][i]) for i
         in range(len(concentrations_at_end["bins"]) - 1)]
