@@ -1,17 +1,17 @@
-'''
-Keeps track of average, minimum and maximum oxygen concentration at cancer
-cells at each epoch
-'''
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 from panaxea.core.Steppables import Helper
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 
 
 class OxygenConcentrationWatcher(Helper, object):
     '''
+
+    Keeps track of average, minimum and maximum oxygen concentration at cancer
+    cells at each epoch
+
     :param model - The model object
     :param cancerCellClassName - Name of the class used to represent cancer
     cells (defaults to CancerCell)
@@ -26,20 +26,21 @@ class OxygenConcentrationWatcher(Helper, object):
         model.output["cancerCellProperties"]["minOxygen"] = list()
         model.output["cancerCellProperties"]["maxOxygen"] = list()
         model.output["cancerCellProperties"]["OxygenDistributions"] = list()
-        self.cancerCellName = cancerCellName
-        self.agentEnvName = model.properties["envNames"]["agentEnvName"]
-        self.oxygenEnvName = model.properties["envNames"]["oxygenEnvName"]
+        self.cancer_cell_name = cancerCellName
+        self.agent_env_name = model.properties["envNames"]["agentEnvName"]
+        self.oxygen_env_name = model.properties["envNames"]["oxygenEnvName"]
         self.interval = interval
 
     def step_epilogue(self, model):
 
         cancerCells = [a for a in model.schedule.agents if (
-                    a.__class__.__name__ == self.cancerCellName and not a.dead)
+                a.__class__.__name__ == self.cancer_cell_name and not a.dead)
                        or a.__class__.__name__ == "HealthyCell"]
         if len(cancerCells) > 0:
-            coordinates = [a.environment_positions[self.agentEnvName] for a in
+            coordinates = [a.environment_positions[self.agent_env_name] for a
+                           in
                            cancerCells]
-            concentrations = [model.environments[self.oxygenEnvName].grid[c]
+            concentrations = [model.environments[self.oxygen_env_name].grid[c]
                               for c in coordinates]
             model.output["cancerCellProperties"]["avgOxygen"].append(
                 np.mean(concentrations))
@@ -48,7 +49,8 @@ class OxygenConcentrationWatcher(Helper, object):
             model.output["cancerCellProperties"]["maxOxygen"].append(
                 max(concentrations))
 
-            if model.current_epoch % self.interval == 0 or model.current_epoch\
+            if model.current_epoch % self.interval == 0 or \
+                    model.current_epoch \
                     == model.epochs - 1:
                 n, bins, patches = plt.hist(concentrations)
                 model.output["cancerCellProperties"][
