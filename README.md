@@ -19,6 +19,7 @@ You can run the requirements.txt as `pip install -r requirements.txt`. _But_, th
 
 ## Contents
 * **analyzers** - Contains functions to analyze model output;
+* **aws** - Contains functions to read from and write to aws queues;
 * **experiments** - Contains experiment csv files;
 * **model** - Contains the model files, including all agent classes, helpers, etc.
 * **reports** - Contains experiment outputs;
