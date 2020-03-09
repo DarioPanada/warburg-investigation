@@ -206,7 +206,7 @@ def get_post_execution_analysis(target_dir, imgs_dir="imgs"):
         c,
         out_path=imgs_path,
         interval=0.001)
-    c.warburgSwitch = True
+    c.warburg_switch = True
     get_hif_from_oxygen(
         c,
         out_path=imgs_path,
@@ -841,12 +841,12 @@ def get_hif_from_oxygen(cancer_cell, interval=10, render=False, out_path=None,
 
     """
     concentrations = np.arange(0, 200, interval)
-    if not cancer_cell.warburgSwitch:
-        hif_expressions = [cancer_cell.calculateHifExpressionRateFromOxygen_(c)
+    if not cancer_cell.warburg_switch:
+        hif_expressions = [cancer_cell.__calculate_hif_expression_rate_from_oxygen(c)
                            for c in concentrations]
     else:
         hif_expressions = [
-            cancer_cell.calculateHifExpressionRateFromOxygenWarburg_(c) for c
+            cancer_cell.__calculate_hif_expression_rate_from_oxygen_warburg(c) for c
             in concentrations]
 
     plt.figure()
@@ -885,7 +885,7 @@ def get_metabolic_rate_from_hif(cancer_cell, interval=1, render=False,
 
     def get_metabolic_rate(h, a):
         a.currentHifRate = h
-        a.updateMetabolicRate_()
+        a.__update_metabolic_rate()
         mr = a.currentMetabolicRate
 
         return mr
@@ -931,7 +931,7 @@ def get_probability_synthesis_from_hif(cancer_cell, interval=1, render=False,
 
     def get_p_synthesis(h, a):
         a.currentHifRate = h
-        a.updatePSynthesis_()
+        a.__update_p_synthesis()
         mr = a.currentPSynthesis
 
         return mr
@@ -979,7 +979,7 @@ def get_vegf_secretion_rate_from_hif_concentration(cancer_cell, interval=1,
 
     def get_vegf_secretion_rate(h, a):
         a.currentHifRate = h
-        a.updateVegfSecretionRate_()
+        a.__update_vegf_secretion_rate()
         mr = a.currentVegfSecretionRate
 
         return mr

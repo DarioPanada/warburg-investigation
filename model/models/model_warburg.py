@@ -248,8 +248,8 @@ def generate_model(properties, numEpochs):
                             state]
                     progress_in_state = randint(0, state_length - 1)
 
-                    c.currentState = state
-                    c.progressInState = progress_in_state
+                    c.current_state = state
+                    c.progress_in_state = progress_in_state
 
                     c.add_agent_to_grid(model.properties["envNames"][
                                             "agentEnvName"], (x, y, z), model)

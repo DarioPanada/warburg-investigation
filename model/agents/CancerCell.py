@@ -1,145 +1,146 @@
 import random
-from panaxea.core.Steppables import Agent
 from numpy.polynomial import Polynomial
+from panaxea.core.Steppables import Agent
 
 
 class CancerCell(Agent, object):
     def __init__(self, model, warburgSwitch=False):
         super(CancerCell, self).__init__()
 
-        self.currentState = "G1"
-        self.progressInState = 0
-        self.cellCycleLength = model.properties["agents"][
+        self.current_state = "G1"
+        self.progress_in_state = 0
+        self.cell_cycle_length = model.properties["agents"][
             "baseCellCycleLength"]
-        self.cellCycleOrder = ["G1", "S", "G2", "M"]
-        self.agentEnvName = model.properties["envNames"]["agentEnvName"]
-        self.oxygenEnvName = model.properties["envNames"]["oxygenEnvName"]
-        self.glucoseEnvName = model.properties["envNames"]["glucoseEnvName"]
-        self.drugEnvName = model.properties["envNames"]["drugEnvName"]
+        self.cell_cycle_order = ["G1", "S", "G2", "M"]
+        self.agent_env_name = model.properties["envNames"]["agentEnvName"]
+        self.oxygen_env_name = model.properties["envNames"]["oxygenEnvName"]
+        self.glucose_env_name = model.properties["envNames"]["glucoseEnvName"]
+        self.drug_env_name = model.properties["envNames"]["drugEnvName"]
 
-        cancerCellProps = model.properties["agents"]["cancerCells"]
+        cancer_cell_props = model.properties["agents"]["cancerCells"]
 
-        self.baseHifRate = cancerCellProps["baseHifRate"]
-        self.oxygenToHifCoeffsHypoxic = cancerCellProps["oxygenToHifCoeffs"][
-            "hypoxic"]
-        self.oxygenToHifCoeffsUltraHypoxic = \
-        cancerCellProps["oxygenToHifCoeffs"]["ultraHypoxic"]
-        self.oxygenToHifCoeffsHypoxicWarburg = \
-        cancerCellProps["oxygenToHifCoeffs"]["warburg"]
-        self.oxygenHypoxicDomain = cancerCellProps["domains"]["hypoxic"]
-        self.oxygenUltraHypoxicDomain = cancerCellProps["domains"][
+        self.base_hif_rate = cancer_cell_props["baseHifRate"]
+        self.oxygen_to_hif_coeffs_hypoxic = \
+            cancer_cell_props["oxygenToHifCoeffs"]["hypoxic"]
+        self.oxygen_to_hif_coeffs_ultra_hypoxic = \
+            cancer_cell_props["oxygenToHifCoeffs"]["ultraHypoxic"]
+        self.oxygen_to_hif_coeffs_hypoxic_warburg = \
+            cancer_cell_props["oxygenToHifCoeffs"]["warburg"]
+        self.oxygen_hypoxic_domain = cancer_cell_props["domains"]["hypoxic"]
+        self.oxygen_ultra_hypoxic_domain = cancer_cell_props["domains"][
             "ultraHypoxic"]
-        self.oxygenWarburgHypoxicDomain = cancerCellProps["domains"][
+        self.oxygen_warburg_hypoxic_domain = cancer_cell_props["domains"][
             "warburgHypoxic"]
 
-        self.currentHifRate = cancerCellProps["minHIF"]
+        self.current_hif_rate = cancer_cell_props["minHIF"]
 
-        self.hifToMetabolicRateCoeffs = cancerCellProps[
+        self.hif_to_metabolic_rate_coeffs = cancer_cell_props[
             "hifToMetabolicRateCoeffs"]
-        self.currentMetabolicRate = 1
+        self.current_metabolic_rate = 1
 
-        self.hifToProliferationRateCoeffs = cancerCellProps[
+        self.hif_to_proliferation_rate_coeffs = cancer_cell_props[
             "hifToProliferationRateCoeffs"]
-        self.minPSynthesis = cancerCellProps["minPSynthesis"]
-        self.currentPSynthesis = self.minPSynthesis
+        self.min_p_synthesis = cancer_cell_props["minPSynthesis"]
+        self.current_p_synthesis = self.min_p_synthesis
 
-        self.hifToVegfSecretionRateCoeffs = cancerCellProps[
+        self.hif_to_vegf_secretion_rate_coeffs = cancer_cell_props[
             "hifToVegfSecretionRateCoeffs"]
-        self.currentVegfSecretionRate = 1
+        self.current_vegf_secretion_rate = 1
 
-        self.minimumOxygenConcentration = cancerCellProps[
+        self.minimum_oxygen_concentration = cancer_cell_props[
             "minimumOxygenConcentration"]
-        self.minGlucoseWarburg = cancerCellProps["minGlucoseWarburg"]
-        self.minGlucoseNonWarburg = cancerCellProps["minGlucoseNonWarburg"]
+        self.min_glucose_warburg = cancer_cell_props["minGlucoseWarburg"]
+        self.min_glucose_non_warburg = cancer_cell_props[
+            "minGlucoseNonWarburg"]
 
-        self.HIFRange = cancerCellProps["HIFRange"]
+        self.hif_range = cancer_cell_props["HIFRange"]
 
-        self.minGlucoseUptakeRate = cancerCellProps["minGlucoseUptakeRate"]
-        self.maxGlucoseUptakeRate = cancerCellProps["maxGlucoseUptakeRate"]
-        self.glucoseUptakeRate = self.minGlucoseUptakeRate
+        self.min_glucose_uptake_rate = cancer_cell_props[
+            "minGlucoseUptakeRate"]
+        self.max_glucose_uptake_rate = cancer_cell_props[
+            "maxGlucoseUptakeRate"]
+        self.glucose_uptake_rate = self.min_glucose_uptake_rate
 
-        self.pWarburgSwitch = cancerCellProps["pWarburgSwitch"]
-        self.warburgSwitch = warburgSwitch
+        self.p_warburg_switch = cancer_cell_props["pWarburgSwitch"]
+        self.warburg_switch = warburgSwitch
 
         self.dead = False
         self.quiescent = False
 
-        self.drugAtPos = 0
+        self.drug_at_pos = 0
 
         # To allow for different drug effects to be tested, this will be
         # loaded as part of the config.
-        self.maxVegf = cancerCellProps["maxVegfSecretionRate"]
+        self.max_vegf = cancer_cell_props["maxVegfSecretionRate"]
         self.age = 0
-        self.minHIF = cancerCellProps["minHIF"]
+        self.min_hif = cancer_cell_props["minHIF"]
 
-    def progressCell_(self, model):
+    def progress_cell_(self, model):
         # time to divide
-        if self.currentState == self.cellCycleOrder[
-            -1] and self.progressInState == self.cellCycleLength[
-            self.currentState]:
-            currentPos = self.environment_positions[self.agentEnvName]
-            targetPos = None
+        if self.current_state == self.cell_cycle_order[-1] and \
+                self.progress_in_state == \
+                self.cell_cycle_length[self.current_state]:
+            current_pos = self.environment_positions[self.agent_env_name]
+            target_pos = None
 
-            if len(model.environments[self.agentEnvName].grid[
-                       (currentPos[0], currentPos[1], currentPos[2])]) < \
+            if len(model.environments[self.agent_env_name].grid[
+                       (current_pos[0], current_pos[1], current_pos[2])]) < \
                     model.properties["maxAgentDensity"]:
-                targetPos = currentPos
+                target_pos = current_pos
             else:
-                mooreTarget = model.environments[
-                    self.agentEnvName].getLeastPopulatedMooreNeigh(currentPos)
-                if len(model.environments[self.agentEnvName].grid[
-                           (mooreTarget[0], mooreTarget[1], mooreTarget[
+                moore_target = model.environments[
+                    self.agent_env_name].getLeastPopulatedMooreNeigh(
+                    current_pos)
+                if len(model.environments[self.agent_env_name].grid[
+                           (moore_target[0], moore_target[1], moore_target[
                                2])]) < \
                         model.properties["maxAgentDensity"]:
-                    targetPos = mooreTarget
+                    target_pos = moore_target
 
-            if targetPos is not None:
+            if target_pos is not None:
                 # Creating new cancer cell and adding it at current position
                 # in the designated environment
                 c = CancerCell(model)
-                c.add_agent_to_grid(self.agentEnvName, targetPos, model)
+                c.add_agent_to_grid(self.agent_env_name, target_pos, model)
                 model.schedule.agentsToSchedule.add(c)
 
                 # Resetting current cell
-                self.progressInState = 0
-                self.currentState = self.cellCycleOrder[0]
-                self.warburgSwitch = False
+                self.progress_in_state = 0
+                self.current_state = self.cell_cycle_order[0]
+                self.warburg_switch = False
                 self.age = 0
 
         # progress in cell life-cyle
-        elif self.progressInState == self.cellCycleLength[self.currentState]:
-            if self.currentState == "G1" and random.random() > \
-                    self.currentPSynthesis:
+        elif self.progress_in_state == \
+                self.cell_cycle_length[self.current_state]:
+            if self.current_state == "G1" and random.random() > \
+                    self.current_p_synthesis:
                 pass
             else:
-                self.progressInState = 0
+                self.progress_in_state = 0
                 # Get index of current state and set next state
-                currentIndex = self.cellCycleOrder.index(self.currentState)
-                self.currentState = self.cellCycleOrder[currentIndex + 1]
+                current_index = self.cell_cycle_order.index(self.current_state)
+                self.current_state = self.cell_cycle_order[current_index + 1]
         else:
-            self.progressInState = self.progressInState + 1
+            self.progress_in_state = self.progress_in_state + 1
 
     def step_main(self, model):
-        currentPos = self.environment_positions[self.agentEnvName]
-        self.oxygenAtPos = model.environments[self.oxygenEnvName].grid[
-            currentPos]
-        self.glucoseAtPos = model.environments[self.glucoseEnvName].grid[
-            currentPos]
-        self.drugAtPos = model.environments[self.drugEnvName].grid[currentPos]
-
-        '''# If a cell is quiescent and the drug dropped, we have it return 
-        active
-        if self.quiescent and self.drugAtPos < self.minDrugDosage:
-            self.quiescent = False'''
+        current_pos = self.environment_positions[self.agent_env_name]
+        self.oxygen_at_pos = model.environments[self.oxygen_env_name].grid[
+            current_pos]
+        self.glucose_at_pos = model.environments[self.glucose_env_name].grid[
+            current_pos]
+        self.drug_at_pos = model.environments[self.drug_env_name].grid[
+            current_pos]
 
         # No logic executed on dead or quiescent cells
         if not self.dead and not self.quiescent:
             self.age = self.age + 1
 
-            if random.random() < self.pWarburgSwitch and not \
-                    self.warburgSwitch:
-                self.warburgSwitch = True
-                self.glucoseUptakeRate = self.maxGlucoseUptakeRate
+            if random.random() < self.p_warburg_switch and not \
+                    self.warburg_switch:
+                self.warburg_switch = True
+                self.glucose_uptake_rate = self.max_glucose_uptake_rate
             # If the cell is not warburg, then in order for it to survive it
             # must:
             # Have access to minimum oxygen concentration
@@ -147,7 +148,7 @@ class CancerCell(Agent, object):
             # If the cell is a warburg cell then, in order for it to
             # survive, it must:
             # Have access to minimum glucose for warburg cells
-            if not self.decideDie_():
+            if not self.decide_die_():
 
                 # If a cell is a warburg cell and the dosage at position is
                 # greater than the minimum threshold,
@@ -157,129 +158,130 @@ class CancerCell(Agent, object):
                 # TEMPORARILY DISABLING DRUGS, THIS SHOULD BE TURNED INTO A
                 # FLAG THAT CAN BE SET FROM PARAMS
 
-                '''if self.drugAtPos >= self.minDrugDosage and 
-                self.warburgSwitch:
-                    self.quiescent = True
-                    return'''
-
-                self.reactToDrug_(model, currentPos)
-                self.updateHifAndMediated_(model)
-                self.progressCell_(model)
+                self.reactToDrug_(model, current_pos)
+                self.__update_hif_and_mediated(model)
+                self.progress_cell_(model)
             else:
                 # A dead cell is not quiescent
                 self.dead = True
                 self.quiescent = False
 
-    def decideDie_(self):
-        if self.warburgSwitch and self.glucoseAtPos < self.minGlucoseWarburg:
-            self.causeOfDeath = {
+    def decide_die_(self):
+        if self.warburg_switch and self.glucose_at_pos < \
+                self.min_glucose_warburg:
+            self.cause_of_death = {
                 "cause": "Lack of glucose",
-                "glucoseAtPos": self.glucoseAtPos,
-                "warburg": self.warburgSwitch,
+                "glucoseAtPos": self.glucose_at_pos,
+                "warburg": self.warburg_switch,
                 "age": self.age
             }
             return True
-        elif not self.warburgSwitch:
-            if self.oxygenAtPos < self.minimumOxygenConcentration:
-                self.causeOfDeath = {
+        elif not self.warburg_switch:
+            if self.oxygen_at_pos < self.minimum_oxygen_concentration:
+                self.cause_of_death = {
                     "cause": "Lack of oxygen",
-                    "oxygenAtPos": self.oxygenAtPos,
-                    "warburg": self.warburgSwitch,
+                    "oxygenAtPos": self.oxygen_at_pos,
+                    "warburg": self.warburg_switch,
                     "age": self.age
                 }
                 return True
-            elif self.glucoseAtPos < self.minGlucoseNonWarburg:
-                self.causeOfDeath = {
+            elif self.glucose_at_pos < self.min_glucose_non_warburg:
+                self.cause_of_death = {
                     "cause": "Lack of glucose",
-                    "glucoseAtPos": self.glucoseAtPos,
-                    "warburg": self.warburgSwitch,
+                    "glucoseAtPos": self.glucose_at_pos,
+                    "warburg": self.warburg_switch,
                     "age": self.age
                 }
                 return True
 
         return False
 
-    def updateHifAndMediated_(self, model):
-        self.updateHifExpressionRate_(model)
-        self.updateMetabolicRate_()
-        self.updatePSynthesis_()
-        self.updateVegfSecretionRate_()
+    def __update_hif_and_mediated(self, model):
+        self.__update_hif_expression_rate(model)
+        self.__update_metabolic_rate()
+        self.__update_p_synthesis()
+        self.__update_vegf_secretion_rate()
 
-    def updatePSynthesis_(self):
+    def __update_p_synthesis(self):
 
-        p = Polynomial(coef=self.hifToProliferationRateCoeffs,
-                       domain=self.HIFRange)
+        p = Polynomial(coef=self.hif_to_proliferation_rate_coeffs,
+                       domain=self.hif_range)
 
-        pSynthesis = p(self.currentHifRate)
+        p_synthesis = p(self.current_hif_rate)
 
-        self.currentPSynthesis = pSynthesis
+        self.current_p_synthesis = p_synthesis
 
-    def updateVegfSecretionRate_(self):
+    def __update_vegf_secretion_rate(self):
 
-        p = Polynomial(coef=self.hifToVegfSecretionRateCoeffs,
-                       domain=self.HIFRange)
+        p = Polynomial(coef=self.hif_to_vegf_secretion_rate_coeffs,
+                       domain=self.hif_range)
 
-        vegfRate = p(self.currentHifRate)
+        vegf_rate = p(self.current_hif_rate)
 
-        self.currentVegfSecretionRate = self.maxVegf * max(0, min(1, vegfRate))
+        adjusted_vegf_rate = max(0, min(1, vegf_rate))
+        self.current_vegf_secretion_rate = self.max_vegf * adjusted_vegf_rate
 
-    def updateMetabolicRate_(self):
+    def __update_metabolic_rate(self):
 
-        p = Polynomial(coef=self.hifToMetabolicRateCoeffs,
-                       domain=self.HIFRange)
+        p = Polynomial(coef=self.hif_to_metabolic_rate_coeffs,
+                       domain=self.hif_range)
 
-        metabolicRate = p(self.currentHifRate)
+        metabolic_rate = p(self.current_hif_rate)
 
-        self.currentMetabolicRate = metabolicRate
+        self.current_metabolic_rate = metabolic_rate
 
-    def updateHifExpressionRate_(self, model):
+    def __update_hif_expression_rate(self, model):
 
-        if not self.warburgSwitch:
-            newRate = self.calculateHifExpressionRateFromOxygen_(
-                self.oxygenAtPos)
+        if not self.warburg_switch:
+            new_rate = self.__calculate_hif_expression_rate_from_oxygen(
+                self.oxygen_at_pos)
         else:
-            newRate = self.calculateHifExpressionRateFromOxygenWarburg_(
-                self.oxygenAtPos)
+            new_rate = \
+                self.__calculate_hif_expression_rate_from_oxygen_warburg(
+                    self.oxygen_at_pos)
 
-        maxShiftPerEpoch = 0.1
+        max_shift_per_epoch = 0.1
 
-        currentRate = self.currentHifRate
+        current_rate = self.current_hif_rate
 
-        if currentRate > newRate:
-            newRate = max(0, currentRate - min(maxShiftPerEpoch,
-                                               currentRate - newRate))
+        if current_rate > new_rate:
+            new_rate = max(0, current_rate - min(max_shift_per_epoch,
+                                                 current_rate - new_rate))
         else:
-            newRate = min(
-                currentRate + min(maxShiftPerEpoch, newRate - currentRate), 16)
+            new_rate = min(
+                current_rate + min(max_shift_per_epoch,
+                                   new_rate - current_rate), 16)
 
-        self.currentHifRate = self.baseHifRate * newRate
+        self.current_hif_rate = self.base_hif_rate * new_rate
 
-    def calculateHifExpressionRateFromOxygen_(self, oxygenAtPos):
+    def __calculate_hif_expression_rate_from_oxygen(self, oxygen_at_pos):
 
-        if oxygenAtPos > self.oxygenHypoxicDomain:
+        if oxygen_at_pos > self.oxygen_hypoxic_domain:
             return 1
 
-        if oxygenAtPos > self.oxygenUltraHypoxicDomain:
-            coef = self.oxygenToHifCoeffsHypoxic
-            domain = [self.oxygenUltraHypoxicDomain, self.oxygenHypoxicDomain]
+        if oxygen_at_pos > self.oxygen_ultra_hypoxic_domain:
+            coef = self.oxygen_to_hif_coeffs_hypoxic
+            domain = [self.oxygen_ultra_hypoxic_domain,
+                      self.oxygen_hypoxic_domain]
         else:
-            coef = self.oxygenToHifCoeffsUltraHypoxic
-            domain = [0.0, self.oxygenUltraHypoxicDomain]
+            coef = self.oxygen_to_hif_coeffs_ultra_hypoxic
+            domain = [0.0, self.oxygen_ultra_hypoxic_domain]
 
         p = Polynomial(coef=coef, domain=domain)
-        return p(oxygenAtPos)
+        return p(oxygen_at_pos)
 
-    def calculateHifExpressionRateFromOxygenWarburg_(self, oxygenAtPos):
-        if oxygenAtPos > self.oxygenWarburgHypoxicDomain:
-            return self.minHIF
+    def __calculate_hif_expression_rate_from_oxygen_warburg(self,
+                                                            oxygen_at_pos):
+        if oxygen_at_pos > self.oxygen_warburg_hypoxic_domain:
+            return self.min_hif
 
-        if oxygenAtPos > self.oxygenUltraHypoxicDomain:
-            coef = self.oxygenToHifCoeffsHypoxicWarburg
-            domain = [self.oxygenUltraHypoxicDomain,
-                      self.oxygenWarburgHypoxicDomain]
+        if oxygen_at_pos > self.oxygen_ultra_hypoxic_domain:
+            coef = self.oxygen_to_hif_coeffs_hypoxic_warburg
+            domain = [self.oxygen_ultra_hypoxic_domain,
+                      self.oxygen_warburg_hypoxic_domain]
         else:
-            coef = self.oxygenToHifCoeffsUltraHypoxic
-            domain = [0.0, self.oxygenUltraHypoxicDomain]
+            coef = self.oxygen_to_hif_coeffs_ultra_hypoxic
+            domain = [0.0, self.oxygen_ultra_hypoxic_domain]
 
         p = Polynomial(coef=coef, domain=domain)
-        return p(oxygenAtPos)
+        return p(oxygen_at_pos)

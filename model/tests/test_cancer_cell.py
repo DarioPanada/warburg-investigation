@@ -19,11 +19,11 @@ class testCancerCell(unittest.TestCase):
         delta = 0.1
         for h in np.arange(2,15, delta):
             a.currentHifRate = h
-            a.updateVegfSecretionRate_()
+            a.__update_vegf_secretion_rate()
             vegfRate = a.currentVegfSecretionRate
 
             a.currentHifRate = h+delta
-            a.updateVegfSecretionRate_()
+            a.__update_vegf_secretion_rate()
             self.assertGreater(a.currentVegfSecretionRate, vegfRate)
             self.assertLessEqual(0, a.currentVegfSecretionRate)
             self.assertGreaterEqual(a.currentVegfSecretionRate, vegfRate)
@@ -32,11 +32,11 @@ class testCancerCell(unittest.TestCase):
         delta = 0.1
         for h in np.arange(2,15, delta):
             a.currentHifRate = h
-            a.updatePSynthesis_()
+            a.__update_p_synthesis()
             pSyntheis = a.currentPSynthesis
 
             a.currentHifRate = h+delta
-            a.updatePSynthesis_()
+            a.__update_p_synthesis()
             self.assertGreaterEqual(a.currentPSynthesis, pSyntheis)
             self.assertLessEqual(0, a.currentPSynthesis)
             self.assertGreaterEqual(1, a.currentPSynthesis)
@@ -45,26 +45,26 @@ class testCancerCell(unittest.TestCase):
         delta = 0.1
         for h in np.arange(2,15, delta):
             a.currentHifRate = h
-            a.updateMetabolicRate_()
+            a.__update_metabolic_rate()
             mr = a.currentMetabolicRate
             a.currentHifRate = h+delta
-            a.updateMetabolicRate_()
+            a.__update_metabolic_rate()
             self.assertGreaterEqual(mr, a.currentMetabolicRate)
             self.assertLessEqual(0, a.currentMetabolicRate)
             self.assertGreaterEqual(1, a.currentMetabolicRate)
 
         # Expectation is that HIF expression rate increases as oxygen decreases, until again falling sharply
         for o in np.arange(0.2,1, 0.1):
-            self.assertEquals(a.calculateHifExpressionRateFromOxygen_(o), 1)
+            self.assertEquals(a.__calculate_hif_expression_rate_from_oxygen(o), 1)
 
         delta = 0.1
         # HIF expression increases between 0.2 and ~0.02
         for o in np.arange(0.02, 0.2, delta):
-            self.assertGreaterEqual(a.calculateHifExpressionRateFromOxygen_(o), a.calculateHifExpressionRateFromOxygen_(o+delta))
+            self.assertGreaterEqual(a.__calculate_hif_expression_rate_from_oxygen(o), a.__calculate_hif_expression_rate_from_oxygen(o + delta))
 
         # HIF expression decreases from ~0.02
         for o in np.arange(0,0.02, delta):
-            self.assertGreaterEqual(a.calculateHifExpressionRateFromOxygen_(o+delta), a.calculateHifExpressionRateFromOxygen_(o))
+            self.assertGreaterEqual(a.__calculate_hif_expression_rate_from_oxygen(o + delta), a.__calculate_hif_expression_rate_from_oxygen(o))
 
         oxygenEnvName = "oxygenEnv"
         agentEnvName = "agentEnv"
