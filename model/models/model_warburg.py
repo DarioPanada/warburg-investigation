@@ -57,7 +57,7 @@ def generate_properties(p):
     env_names["glucoseEnvName"] = "glucoseEnv"
     env_names["drugEnvName"] = "drugEnv"
 
-    properties["env_names"] = env_names
+    properties["envNames"] = env_names
 
     properties["envSize"] = p["envSize"]
 
@@ -121,7 +121,7 @@ def generate_properties(p):
         "minimumOxygenConcentration"]
     cancer_cells["maxVegfSecretionRate"] = 10
 
-    agents["cancer_cells"] = cancer_cells
+    agents["cancerCells"] = cancer_cells
 
     agents["healthyTissues"] = {
         "oxygenUptakeRate": p["healthyTissueOxygenUptakeRate"]
@@ -129,7 +129,7 @@ def generate_properties(p):
 
     endothelial_cells = dict()
 
-    agents["endothelial_cells"] = endothelial_cells
+    agents["endothelialCells"] = endothelial_cells
 
     # Minimum vegf concentration to sprout angiogenesis
     endothelial_cells["minimumVegfConcentration"] = \

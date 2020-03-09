@@ -50,7 +50,7 @@ class GlucoseDiffusionHelper(Helper):
             sink_warburg = [a.glucoseUptakeRate for a in agents if
                             a.__class__.__name__ == self.cancer_cell_name
                             and not (a.dead or a.quiescent) and
-                            a.a.warburg_switch]
+                            a.warburg_switch]
             sink_rate_warburg = sum(sink_warburg)
 
             sink_non_warburg = [a.glucose_uptake_rate for a in agents if

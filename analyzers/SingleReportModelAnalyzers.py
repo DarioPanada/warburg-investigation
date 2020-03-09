@@ -89,22 +89,22 @@ def get_avg_cancer_props(models):
         The set of models lite (eg: As obtained through getModels)
 
     """
-    avgHif = np.mean(
+    avg_hif = np.mean(
         [m.output["cancerCellProperties"]["avgHif"] for m in models], axis=0)
-    avgVegf = np.mean(
+    avg_vegf = np.mean(
         [m.output["cancerCellProperties"]["avgVegf"] for m in models], axis=0)
-    avgMetabolicRate = np.mean(
+    avg_metabolic_rate = np.mean(
         [m.output["cancerCellProperties"]["avgMetabolicRates"] for m in
          models], axis=0)
-    avgPSynthesis = np.mean(
+    avg_p_synthesis = np.mean(
         [m.output["cancerCellProperties"]["avgPSynthesis"] for m in models],
         axis=0)
 
     return {
-        "avgHif": avgHif,
-        "avgVegf": avgVegf,
-        "avgMetabolicRate": avgMetabolicRate,
-        "avgPSynthesis": avgPSynthesis
+        "avgHif": avg_hif,
+        "avgVegf": avg_vegf,
+        "avgMetabolicRate": avg_metabolic_rate,
+        "avgPSynthesis": avg_p_synthesis
     }
 
 
@@ -843,11 +843,11 @@ def get_hif_from_oxygen(cancer_cell, interval=10, render=False, out_path=None,
     concentrations = np.arange(0, 200, interval)
     if not cancer_cell.warburg_switch:
         hif_expressions = [
-            cancer_cell.__calculate_hif_expression_rate_from_oxygen(c)
+            cancer_cell._calculate_hif_expression_rate_from_oxygen(c)
             for c in concentrations]
     else:
         hif_expressions = [
-            cancer_cell.__calculate_hif_expression_rate_from_oxygen_warburg(c)
+            cancer_cell._calculate_hif_expression_rate_from_oxygen_warburg(c)
             for c in concentrations]
 
     plt.figure()
@@ -886,8 +886,8 @@ def get_metabolic_rate_from_hif(cancer_cell, interval=1, render=False,
 
     def get_metabolic_rate(h, a):
         a.currentHifRate = h
-        a.__update_metabolic_rate()
-        mr = a.currentMetabolicRate
+        a._update_metabolic_rate()
+        mr = a.current_metabolic_rate
 
         return mr
 
@@ -932,8 +932,8 @@ def get_probability_synthesis_from_hif(cancer_cell, interval=1, render=False,
 
     def get_p_synthesis(h, a):
         a.currentHifRate = h
-        a.__update_p_synthesis()
-        mr = a.currentPSynthesis
+        a._update_p_synthesis()
+        mr = a.current_p_synthesis
 
         return mr
 
@@ -980,8 +980,8 @@ def get_vegf_secretion_rate_from_hif_concentration(cancer_cell, interval=1,
 
     def get_vegf_secretion_rate(h, a):
         a.currentHifRate = h
-        a.__update_vegf_secretion_rate()
-        mr = a.currentVegfSecretionRate
+        a._update_vegf_secretion_rate()
+        mr = a.current_vegf_secretion_rate
 
         return mr
 

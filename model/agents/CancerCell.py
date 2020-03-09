@@ -158,8 +158,7 @@ class CancerCell(Agent, object):
                 # TEMPORARILY DISABLING DRUGS, THIS SHOULD BE TURNED INTO A
                 # FLAG THAT CAN BE SET FROM PARAMS
 
-                self.reactToDrug_(model, current_pos)
-                self.__update_hif_and_mediated(model)
+                self._update_hif_and_mediated(model)
                 self.progress_cell_(model)
             else:
                 # A dead cell is not quiescent
@@ -196,13 +195,13 @@ class CancerCell(Agent, object):
 
         return False
 
-    def __update_hif_and_mediated(self, model):
-        self.__update_hif_expression_rate(model)
-        self.__update_metabolic_rate()
-        self.__update_p_synthesis()
-        self.__update_vegf_secretion_rate()
+    def _update_hif_and_mediated(self, model):
+        self._update_hif_expression_rate(model)
+        self._update_metabolic_rate()
+        self._update_p_synthesis()
+        self._update_vegf_secretion_rate()
 
-    def __update_p_synthesis(self):
+    def _update_p_synthesis(self):
 
         p = Polynomial(coef=self.hif_to_proliferation_rate_coeffs,
                        domain=self.hif_range)
@@ -211,7 +210,7 @@ class CancerCell(Agent, object):
 
         self.current_p_synthesis = p_synthesis
 
-    def __update_vegf_secretion_rate(self):
+    def _update_vegf_secretion_rate(self):
 
         p = Polynomial(coef=self.hif_to_vegf_secretion_rate_coeffs,
                        domain=self.hif_range)
@@ -221,7 +220,7 @@ class CancerCell(Agent, object):
         adjusted_vegf_rate = max(0, min(1, vegf_rate))
         self.current_vegf_secretion_rate = self.max_vegf * adjusted_vegf_rate
 
-    def __update_metabolic_rate(self):
+    def _update_metabolic_rate(self):
 
         p = Polynomial(coef=self.hif_to_metabolic_rate_coeffs,
                        domain=self.hif_range)
@@ -230,14 +229,14 @@ class CancerCell(Agent, object):
 
         self.current_metabolic_rate = metabolic_rate
 
-    def __update_hif_expression_rate(self, model):
+    def _update_hif_expression_rate(self, model):
 
         if not self.warburg_switch:
-            new_rate = self.__calculate_hif_expression_rate_from_oxygen(
+            new_rate = self._calculate_hif_expression_rate_from_oxygen(
                 self.oxygen_at_pos)
         else:
             new_rate = \
-                self.__calculate_hif_expression_rate_from_oxygen_warburg(
+                self._calculate_hif_expression_rate_from_oxygen_warburg(
                     self.oxygen_at_pos)
 
         max_shift_per_epoch = 0.1
@@ -254,7 +253,7 @@ class CancerCell(Agent, object):
 
         self.current_hif_rate = self.base_hif_rate * new_rate
 
-    def __calculate_hif_expression_rate_from_oxygen(self, oxygen_at_pos):
+    def _calculate_hif_expression_rate_from_oxygen(self, oxygen_at_pos):
 
         if oxygen_at_pos > self.oxygen_hypoxic_domain:
             return 1
@@ -270,8 +269,8 @@ class CancerCell(Agent, object):
         p = Polynomial(coef=coef, domain=domain)
         return p(oxygen_at_pos)
 
-    def __calculate_hif_expression_rate_from_oxygen_warburg(self,
-                                                            oxygen_at_pos):
+    def _calculate_hif_expression_rate_from_oxygen_warburg(self,
+                                                           oxygen_at_pos):
         if oxygen_at_pos > self.oxygen_warburg_hypoxic_domain:
             return self.min_hif
 

@@ -61,7 +61,7 @@ class OxygenDiffusionHelper(Helper):
             # Getting the current sink rate, defined as the sum of the sink
             # rates of all non-dead and non-quiescent
             # cancer cells and healthy cells at this position
-            sink_rate = sum([a.currentMetabolicRate for a in agents if
+            sink_rate = sum([a.current_metabolic_rate for a in agents if
                              (a.__class__.__name__ == "CancerCell"
                               and not (a.quiescent or a.dead)) or (
                                      a.__class__.__name__ ==
@@ -71,7 +71,7 @@ class OxygenDiffusionHelper(Helper):
             # rates of all Tip and Trunk cells at
             # this position
             source_rate = sum(
-                [a.oxygenEmissionRate for a in agents if
+                [a.oxygen_emission_rate for a in agents if
                  a.__class__.__name__ in ("TipCell", "TrunkCell")])
 
             # A pre-estimate of what the concentration at this position will

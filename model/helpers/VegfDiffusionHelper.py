@@ -43,7 +43,7 @@ class VegfDiffusionHelper(Helper):
             concentration_at_pos = phi_tmp[coordinate[0]][coordinate[1]][
                 coordinate[2]]
 
-            source_rate = sum([a.currentVegfSecretionRate for a in agents if
+            source_rate = sum([a.current_vegf_secretion_rate for a in agents if
                                (a.__class__.__name__ == "CancerCell"
                                 and not (a.quiescent or a.dead))])
             # A pre-estimate of what the concentration at this position will

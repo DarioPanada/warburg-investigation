@@ -96,7 +96,7 @@ class TipCell(EndothelialCell, object):
             model.schedule.agentsToSchedule.add(t)
 
     # A cell automatically sprouts if its radius is > 1
-    def __decide_sprout_linear(self, tafConcentration):
+    def _decide_sprout_linear(self, tafConcentration):
 
         return self.radius > 1
 
@@ -104,7 +104,7 @@ class TipCell(EndothelialCell, object):
     # score), returns a neighbour
     # where those with a higher score have the highest probability of being
     # picked
-    def __get_next_neigh_from_scored(self, neighs):
+    def _get_next_neigh_from_scored(self, neighs):
         threshold = random()
 
         for n in neighs:
@@ -113,7 +113,7 @@ class TipCell(EndothelialCell, object):
 
     # Assigns a score to each neighbourhood position where 0 = awful and 1 =
     # best and sum(scores) = 1
-    def __rank_neighbours(self, model):
+    def _rank_neighbours(self, model):
         neigh = model.environments[self.agent_env].getMooreNeighbourhood(
             self.environment_positions[self.agent_env])
 

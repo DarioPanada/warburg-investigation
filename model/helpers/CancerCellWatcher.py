@@ -1,9 +1,6 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from panaxea.core.Steppables import Helper
-
-matplotlib.use("Agg")
 
 plt.switch_backend("agg")
 

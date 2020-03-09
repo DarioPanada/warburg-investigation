@@ -6,7 +6,7 @@ import os
 experiments_file = "experiments/experiments_warburg.csv"
 experiments = pd.read_csv(experiments_file).to_dict(orient="records")
 
-num_epochs = 10
+num_epochs = 1
 output_dir = "reports"
 
 print("There are {0} experiments".format(len(experiments)))
