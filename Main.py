@@ -7,7 +7,7 @@ from model.models.model_warburg import *
 experiments_file = "experiments/experiments_warburg.csv"
 experiments = pd.read_csv(experiments_file).to_dict(orient="records")
 
-num_epochs = 1
+num_epochs = 2
 output_dir = "reports"
 
 print("There are {0} experiments".format(len(experiments)))

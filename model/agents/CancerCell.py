@@ -102,7 +102,7 @@ class CancerCell(Agent, object):
                 # in the designated environment
                 c = CancerCell(model)
                 c.add_agent_to_grid(self.agent_env_name, target_pos, model)
-                model.schedule.agentsToSchedule.add(c)
+                model.schedule.agents_to_schedule.add(c)
 
                 # Resetting current cell
                 self.progress_in_state = 0
