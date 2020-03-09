@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import pickle
 from analyzers.SingleReportModelAnalyzers import get_post_execution_analysis
 from model.models.model_warburg import *
 

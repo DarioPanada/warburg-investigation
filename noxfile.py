@@ -6,3 +6,4 @@ def lint(session):
     session.run("flake8", "./analyzers")
     session.run("flake8", "./experiments")
     session.run("flake8", "./model")
+    session.run("flake8", "./aws")

@@ -8,6 +8,7 @@ RUN mkdir /warburg-investigation
 
 COPY . /warburg-investigation
 RUN apt-get update
+ENV PYTHONPATH "${PYTHONPATH}:/warburg-investigation"
 
 # Installing necessary packages
 RUN apt-get update
