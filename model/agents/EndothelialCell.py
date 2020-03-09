@@ -15,22 +15,24 @@ class EndothelialCell(Agent, object):
 
         self.radius = radius
         self.baseOxygenEmissionRate = \
-        model.properties["agents"]["endothelialCells"][
-            "baseOxygenEmissionRate"]
-        self.updateOxygenEmissionRate()
+            model.properties["agents"]["endothelialCells"][
+                "baseOxygenEmissionRate"]
+        self.update_oxygen_emission_rate()
 
-        self.baseGlucoseSecretionRate = \
-        model.properties["agents"]["endothelialCells"]["glucoseSecretionRate"]
-        self.updateGlucoseSecretionRate()
+        self.base_glucose_secretion_rate = \
+            model.properties["agents"]["endothelialCells"][
+                "glucoseSecretionRate"]
+        self.update_glucose_secretion_rate()
 
-    def stepMain(self, model):
-        self.updateOxygenEmissionRate()
+    def step_main(self, model):
+        self.update_oxygen_emission_rate()
 
-    def updateGlucoseSecretionRate(self):
-        self.glucoseSecretionRate = self.radius * self.baseGlucoseSecretionRate
+    def update_glucose_secretion_rate(self):
+        self.glucose_secretion_rate = self.radius * \
+                                      self.base_glucose_secretion_rate
 
-    def updateOxygenEmissionRate(self):
-        self.oxygenEmissionRate = self.radius * self.baseOxygenEmissionRate
+    def update_oxygen_emission_rate(self):
+        self.oxygen_emission_rate = self.radius * self.baseOxygenEmissionRate
 
 
 class TipCell(EndothelialCell, object):
@@ -38,61 +40,63 @@ class TipCell(EndothelialCell, object):
         super(TipCell, self).__init__(model, radius=radius)
 
         # Copying environment names to avoid continuosly accessing the model
-        self.vegfEnv = model.properties["envNames"]["vegfEnvName"]
-        self.agentEnv = model.properties["envNames"]["agentEnvName"]
+        self.vegf_env = model.properties["envNames"]["vegfEnvName"]
+        self.agent_env = model.properties["envNames"]["agentEnvName"]
 
-        endothelialCellsProperties = model.properties["agents"][
+        endothelial_cells_properties = model.properties["agents"][
             "endothelialCells"]
-        self.minimumVegfConcentration = endothelialCellsProperties[
+        self.minimum_vegf_concentration = endothelial_cells_properties[
             "minimumVegfConcentration"]
-        self.divisionDelay = endothelialCellsProperties["divisionDelay"]
+        self.division_delay = endothelial_cells_properties["divisionDelay"]
 
-        self.cellAge = 0
+        self.cell_age = 0
 
     def step_main(self, model):
-        super(TipCell, self).stepMain(model)
-        self.cellAge = min(self.divisionDelay, self.cellAge + 1)
+        super(TipCell, self).step_main(model)
+        self.cell_age = min(self.division_delay, self.cell_age + 1)
 
-        currentPosition = self.environment_positions[self.agentEnv]
+        current_position = self.environment_positions[self.agent_env]
 
-        tafAtCurrentPosition = model.environments[self.vegfEnv].grid[
-            currentPosition]
+        taf_at_current_position = model.environments[self.vegf_env].grid[
+            current_position]
 
-        if tafAtCurrentPosition >= self.minimumVegfConcentration and \
-                self.cellAge == self.divisionDelay and 10. * random() < \
-                tafAtCurrentPosition:
-            self.cellAge = 0
+        if taf_at_current_position >= self.minimum_vegf_concentration and \
+                self.cell_age == self.division_delay and 10. * random() < \
+                taf_at_current_position:
+            self.cell_age = 0
 
-            neigh = model.environments[self.agentEnv].getMooreNeighbourhood(
-                self.environment_positions[self.agentEnv])
+            neigh = model.environments[self.agent_env].getMooreNeighbourhood(
+                self.environment_positions[self.agent_env])
 
             # get taf concentration at each neighbouring position
-            neighToTaf = [(n, model.environments[self.vegfEnv].grid[n]) for n
-                          in neigh]
+            neigh_to_taf = [(n, model.environments[self.vegf_env].grid[n]) for
+                            n
+                            in neigh]
 
             def f(x):
                 return x[1]
 
-            sortedNeigh = sorted(neighToTaf, key=f, reverse=True)
+            sorted_neigh = sorted(neigh_to_taf, key=f, reverse=True)
 
-            newPos = sortedNeigh.pop(0)[0]
+            new_pos = sorted_neigh.pop(0)[0]
 
-            while model.environments[self.agentEnv].grid[newPos].__len__() >= \
+            while model.environments[self.agent_env].grid[new_pos].__len__() \
+                    >= \
                     model.properties["maxAgentDensity"]:
-                if len(sortedNeigh) == 0:
+                if len(sorted_neigh) == 0:
                     return
                 else:
-                    newPos = sortedNeigh.pop(0)[0]
+                    new_pos = sorted_neigh.pop(0)[0]
 
-            self.MoveAgent(self.agentEnv, newPos, model)
+            self.MoveAgent(self.agent_env, new_pos, model)
 
             # Create tip cell at old position1
             t = TrunkCell(model, radius=self.radius)
-            t.add_agent_to_grid(self.agentEnv, currentPosition, model)
+            t.add_agent_to_grid(self.agent_env, current_position, model)
             model.schedule.agentsToSchedule.add(t)
 
     # A cell automatically sprouts if its radius is > 1
-    def decideSproutLinear_(self, tafConcentration):
+    def __decide_sprout_linear(self, tafConcentration):
 
         return self.radius > 1
 
@@ -100,7 +104,7 @@ class TipCell(EndothelialCell, object):
     # score), returns a neighbour
     # where those with a higher score have the highest probability of being
     # picked
-    def getNextNeighFromScored_(self, neighs):
+    def __get_next_neigh_from_scored(self, neighs):
         threshold = random()
 
         for n in neighs:
@@ -109,40 +113,40 @@ class TipCell(EndothelialCell, object):
 
     # Assigns a score to each neighbourhood position where 0 = awful and 1 =
     # best and sum(scores) = 1
-    def rankNeighbours_(self, model):
-        neigh = model.environments[self.agentEnv].getMooreNeighbourhood(
-            self.environment_positions[self.agentEnv])
+    def __rank_neighbours(self, model):
+        neigh = model.environments[self.agent_env].getMooreNeighbourhood(
+            self.environment_positions[self.agent_env])
 
         # get taf concentration at each neighbouring position
-        neighToTaf = [(n, model.environments[self.vegfEnv].grid[n]) for n in
-                      neigh]
+        neigh_to_taf = [(n, model.environments[self.vegf_env].grid[n]) for n in
+                        neigh]
 
         # get total taf concentration
-        totalTaf = sum([x[1] for x in neighToTaf])
+        total_taf = sum([x[1] for x in neigh_to_taf])
 
         # In the case where there is no taf, we treat all neighbouring
         # positions alike
-        if totalTaf < 0.0001:
-            scoredNeigh = [(x[0], 0) for x in neighToTaf]
+        if total_taf < 0.0001:
+            scored_neigh = [(x[0], 0) for x in neigh_to_taf]
         else:
             # scoring the neighbourhood
-            scoredNeigh = [(x[0], float(x[1]) / float(totalTaf)) for x in
-                           neighToTaf]
+            scored_neigh = [(x[0], float(x[1]) / float(total_taf)) for x in
+                            neigh_to_taf]
 
         # sorting by taf concentration
         def f(x):
             return x[1]
 
-        sortedNeigh = sorted(scoredNeigh, key=f)
+        sorted_neigh = sorted(scored_neigh, key=f)
 
         accumulator = 0
-        accumulatedNeigh = []
+        accumulated_neigh = []
 
-        for n in sortedNeigh:
+        for n in sorted_neigh:
             accumulator = accumulator + n[1]
-            accumulatedNeigh.append((n[0], accumulator))
+            accumulated_neigh.append((n[0], accumulator))
 
-        return accumulatedNeigh
+        return accumulated_neigh
 
 
 class TrunkCell(EndothelialCell, object):

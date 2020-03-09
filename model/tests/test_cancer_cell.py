@@ -76,13 +76,13 @@ class testCancerCell(unittest.TestCase):
         a.add_agent_to_grid(agentEnvName, (5,5,5), model)
 
         # Checking cancer cells die in low oxygen concentration
-        a.stepMain(model)
+        a.step_main(model)
         self.assertEqual(0, [a for a in envAgents.grid[(5,5,5)] if a.dead].__len__())
 
         self.assertEqual((5,5,5), a.environment_positions[agentEnvName])
 
         envOxygen.grid[(5,5,5)] = 0.00001
-        a.stepMain(model)
+        a.step_main(model)
 
 
         self.assertEqual(1, [a for a in envAgents.grid[(5,5,5)] if a.dead].__len__())
