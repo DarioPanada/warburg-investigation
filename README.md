@@ -21,7 +21,7 @@ You can run the requirements.txt as `pip install -r requirements.txt`. _But_, th
 * **analyzers** - Contains functions to analyze model output;
 * **experiments** - Contains experiment csv files;
 * **model** - Contains the model files, including all agent classes, helpers, etc.
-* **requirements** - Contains experiment outputs;
+* **reports** - Contains experiment outputs;
 
 ## Running the Code
 
