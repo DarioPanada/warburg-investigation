@@ -111,7 +111,8 @@ def generate_properties(p):
 
     # Minimum probability of progressing into synthesis
     cancer_cells["minPSynthesis"] = p["minPSynthesis"]
-    cancer_cells["hifToProliferationRateCoeffs"] = ohrg.get_hif_to_p_synthesis()
+    cancer_cells[
+        "hifToProliferationRateCoeffs"] = ohrg.get_hif_to_p_synthesis()
 
     cancer_cells["hifToVegfSecretionRateCoeffs"] = ohrg.get_hif_to_vegf()
 
