@@ -15,25 +15,31 @@ class DeathCauseWatcher(Helper, object):
     def step_epilogue(self, model):
 
         if model.current_epoch % self.interval == 0:
-            cancerCells = [a for a in model.schedule.agents if
-                           a.__class__.__name__ == "CancerCell" and a.dead]
+            cancer_cells = [a for a in model.schedule.agents if
+                            a.__class__.__name__ == "CancerCell" and a.dead]
 
-            warburgDeathGlucose = [c for c in cancerCells if
-                                   c.warburgSwitch and c.causeOfDeath[
-                                       "cause"] == "Lack of glucose"]
-            warburgDeathOxygen = [c for c in cancerCells if
-                                  c.warburgSwitch and c.causeOfDeath[
-                                      "cause"] == "Lack of oxygen"]
-            nonWarburgDeathGlucose = [c for c in cancerCells if
-                                      not c.warburgSwitch and c.causeOfDeath[
-                                          "cause"] == "Lack of glucose"]
-            nonWarburgDeathOxygen = [c for c in cancerCells if
-                                     not c.warburgSwitch and c.causeOfDeath[
-                                         "cause"] == "Lack of oxygen"]
+            warburg_death_glucose = [c for c in cancer_cells if
+                                     c.warburg_switchand and c.cause_of_death[
+                                         "cause"] == "Lack of glucose"]
+            warburg_death_oxygen = [c for c in cancer_cells if
+                                    c.warburg_switch and c.cause_of_death[
+                                        "cause"] == "Lack of oxygen"]
+            non_warburg_death_glucose = [c for c in cancer_cells if
+                                         not c.warburg_switch and
+                                         c.cause_of_death[
+                                             "cause"] == "Lack of glucose"]
+            non_warburg_death_oxygen = [c for c in cancer_cells if
+                                        not c.warburg_switch and
+                                        c.cause_of_death[
+                                            "cause"] == "Lack of oxygen"]
 
-            if (len(warburgDeathGlucose) + len(warburgDeathOxygen) + len(
-                    nonWarburgDeathGlucose) + len(
-                    nonWarburgDeathOxygen)) != len(cancerCells):
+            sum_partial_lengths = sum(
+                [len(warburg_death_glucose), len(warburg_death_oxygen),
+                 len(non_warburg_death_glucose),
+                 len(non_warburg_death_oxygen)]
+            )
+
+            if sum_partial_lengths != len(cancer_cells):
                 print(
                     "ERROR, LENGTH OF COLLECTED DEAD CELLS DIFFERENT FROM "
                     "LENGTH OF TOTAL DEAD CELLS")
@@ -41,26 +47,26 @@ class DeathCauseWatcher(Helper, object):
 
             # summarising
             summary = {
-                "warburgDeathGlucose": {"num": len(warburgDeathGlucose),
-                                        "avgAge": np.mean([c.age for c in
-                                                           warburgDeathGlucose]),
-                                        "stDev": np.std([c.age for c in
-                                                         warburgDeathGlucose])},
-                "warburgDeathOxygen": {"num": len(warburgDeathOxygen),
-                                       "avgAge": np.mean([c.age for c in
-                                                          warburgDeathOxygen]),
-                                       "stDev": np.std([c.age for c in
-                                                        warburgDeathOxygen])},
-                "nonWarburgDeathOxygen": {"num": len(nonWarburgDeathOxygen),
-                                          "avgAge": np.mean([c.age for c in
-                                                             nonWarburgDeathOxygen]),
-                                          "stDev": np.std([c.age for c in
-                                                           nonWarburgDeathOxygen])},
-                "nonWarburgDeathGlucose": {"num": len(nonWarburgDeathGlucose),
-                                           "avgAge": np.mean([c.age for c in
-                                                              nonWarburgDeathGlucose]),
-                                           "stDev": np.std([c.age for c in
-                                                            nonWarburgDeathGlucose])},
+                "warburgDeathGlucose": {
+                    "num": len(warburg_death_glucose),
+                    "avgAge": np.mean([c.age for c in warburg_death_glucose]),
+                    "stDev": np.std([c.age for c in warburg_death_glucose])},
+                "warburgDeathOxygen": {
+                    "num": len(warburg_death_oxygen),
+                    "avgAge": np.mean([c.age for c in warburg_death_oxygen]),
+                    "stDev": np.std([c.age for c in warburg_death_oxygen])},
+                "nonWarburgDeathOxygen": {
+                    "num": len(non_warburg_death_oxygen),
+                    "avgAge": np.mean(
+                        [c.age for c in non_warburg_death_oxygen]),
+                    "stDev": np.std(
+                        [c.age for c in non_warburg_death_oxygen])},
+                "nonWarburgDeathGlucose": {
+                    "num": len(non_warburg_death_glucose),
+                    "avgAge": np.mean(
+                        [c.age for c in non_warburg_death_glucose]),
+                    "stDev": np.std([c.age for c in non_warburg_death_glucose])
+                },
 
             }
 
