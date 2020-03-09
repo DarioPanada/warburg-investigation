@@ -48,7 +48,7 @@ class GlucoseDiffusionHelper(Helper):
             # Getting the current sink rate, defined as the sum of the sink
             # rates of all non-dead and non-quiescent
             # cancer cells and healthy cells at this position
-            sink_warburg = [a.glucoseUptakeRate for a in agents if
+            sink_warburg = [a.glucose_uptake_rate for a in agents if
                             a.__class__.__name__ == self.cancer_cell_name
                             and not (a.dead or a.quiescent) and
                             a.warburg_switch]

@@ -1,7 +1,8 @@
-from model.models.model_warburg import *
-from analyzers.SingleReportModelAnalyzers import get_post_execution_analysis
-import pandas as pd
 import os
+import pandas as pd
+import pickle
+from analyzers.SingleReportModelAnalyzers import get_post_execution_analysis
+from model.models.model_warburg import *
 
 experiments_file = "experiments/experiments_warburg.csv"
 experiments = pd.read_csv(experiments_file).to_dict(orient="records")
@@ -28,5 +29,5 @@ for experiment in experiments[:5]:
     model.run()
     print("Running analysis...")
     get_post_execution_analysis(experiment_dir)
-    print("All done!")
 
+    print("All done!")
