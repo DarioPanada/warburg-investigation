@@ -7,7 +7,11 @@ This repository contains code for my cancer modelling related to investigating t
 The code is designed to run under Python 2.7 . 
 
 It is recommended to run the code inside the provided docker container. A dockerfile is provided, and the image is also available
-[on dockerhub](https://hub.docker.com/r/dashma94/panaxea-warburg).
+[on dockerhub](https://hub.docker.com/r/dashma94/panaxea-warburg). The file to generate it is Dockerfile. **Note that this will *not* include the code.**
+
+If you just want to quickly run the code, you can use Dockerfile_With_Code. This will setup a container with all dependencies and copy the code in it.
+
+Dockerfile also includes some dependencies useful for cloud deployment on AWS that Dockerfile_With_Code doesn't have.
 
 A requirements.txt file is provided specifying dependencies.
 
@@ -15,7 +19,6 @@ You can run the requirements.txt as `pip install -r requirements.txt`. _But_, th
 
 ## Contents
 * **analyzers** - Contains functions to analyze model output;
-* **docker** - Contains the dockerfile with all dependencies for the code to run;
 * **experiments** - Contains experiment csv files;
 * **model** - Contains the model files, including all agent classes, helpers, etc.
 * **requirements** - Contains experiment outputs;

@@ -1,24 +1,29 @@
 import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+plt.switch_backend("agg")
 import numpy as np
 from panaxea.core.Steppables import Helper
 
-matplotlib.use("Agg")
-
 
 class OxygenConcentrationWatcher(Helper, object):
-    '''
-
+    """
     Keeps track of average, minimum and maximum oxygen concentration at cancer
-    cells at each epoch
+    cells at each epoch.
 
-    :param model - The model object
-    :param cancerCellClassName - Name of the class used to represent cancer
-    cells (defaults to CancerCell)
-    :param interval - A value n such that a snapshot of oxygen
-    concentrations will be taken every n epochs
-    (defaults to 1)
-    '''
+    Output keys are created under "cancerCellProperties".
+
+    Attributes
+    ----------
+    model : Model
+        The model instance
+     cancer_cell_class_name : string, optional
+        The name of the cancer cell class, defaults to Cancer Cell
+    interval : int
+        The number of epochs between "snapshots", defaults to 1
+    """
 
     def __init__(self, model, cancerCellName="CancerCell", interval=1):
 

@@ -1,11 +1,21 @@
 from panaxea.core.Steppables import Helper
 
-'''
-Counts number of agent types at each epoch and saves them to model output
-'''
-
 
 class AgentCounter(Helper, object):
+    """
+    Counts number of agent types at each epoch and saves them to model output.
+
+    These are saved under the key agentNums as a map of keys, one per class
+    name, to lists, where at each epoch the number of class instances is
+    appended.
+
+    Attributes
+    ----------
+    model : Model
+        The model instance
+    cancer_cell_class_name : string, optional
+        The name of the cancer cell class, defaults to Cancer Cell
+    """
 
     def __init__(self, model, cancer_cell_class_name="CancerCell"):
         self.cancer_cell_class_name = cancer_cell_class_name

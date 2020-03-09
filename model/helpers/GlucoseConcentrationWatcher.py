@@ -1,24 +1,31 @@
 import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+plt.switch_backend("agg")
 import numpy as np
 from panaxea.core.Steppables import Helper
 
-matplotlib.use("Agg")
-
 
 class GlucoseConcentrationWatcher(Helper, object):
-    '''
+    """
     Keeps track of average, minimum and maximum glucose concentrations at
-    cancer
-    cells at each epoch
+    cancer cells at each epoch.
 
-   :param model - The model object
-   :param cancerCellClassName - Name of the class used to represent cancer
-   cells (defaults to CancerCell)
-   :param interval - A value n such that a snapshot of glucose
-   concentrations will be taken every n epochs
-   (defaults to 1)
-   '''
+    Values are stored in the output under the key cancerCellProperties.
+
+    Attributes
+    ----------
+    model : Model
+        The current model instance
+    cancer_cell_class_name : string, optional
+        The name of the cancer cell class, defaults to Cancer Cell
+        distribution_interval : int, optional
+    interval : int, optional
+        A value n such that a snapshot of glucose
+        concentrations will be taken every n epochs. Optional, defaults to 1
+    """
 
     def __init__(self, model, cancer_cell_name="CancerCell", interval=1):
 

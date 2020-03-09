@@ -5,6 +5,7 @@ from panaxea.core.Steppables import Helper
 
 
 class GlucoseDiffusionHelper(Helper):
+
     def __init__(self, model, cancerCellName="CancerCell"):
         self.agent_env_name = model.properties["envNames"]["agentEnvName"]
         self.glucose_env_name = model.properties["envNames"]["glucoseEnvName"]

@@ -1,20 +1,20 @@
 from panaxea.core.Steppables import Helper
 
-'''
-Helper checks if any custom exit condition for the simulation is true and,
-if so, sets the 'exit' flag of the model
-to true
-'''
-
 
 class ExitConditionWatcher(Helper, object):
-    '''
-    :param exit_conditions - List of functions that, taken an instance of the
-    model, return true or false.
+    """
+    At each epoch, checks whether any exit condition is met and if so sets
+    the "exit" flag in the model to true.
 
-    These should be functions, *NOT* lambdas, as pickle has issues with
-    lambdas!
-    '''
+    Attributes
+    ----------
+    exit_conditions : list
+        A list of functions, each of which should take the current model
+        instance and return a boolean.
+
+        These should be functions, *NOT* lambdas, as pickle has issues with
+        lambdas!
+    """
 
     def __init__(self, exit_conditions):
         self.exit_conditions = exit_conditions

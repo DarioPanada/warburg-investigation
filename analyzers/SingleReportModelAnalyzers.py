@@ -1,12 +1,9 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 from panaxea.toolkit.Toolkit import depickle_from_lite
 
 from model.agents.CancerCell import CancerCell
-
-matplotlib.use("Agg")
 
 
 def get_avg_num_agents(models):

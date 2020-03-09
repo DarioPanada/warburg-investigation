@@ -1,5 +1,9 @@
 import matplotlib
 import matplotlib.pyplot as plt
+
+matplotlib.use("Agg")
+
+plt.switch_backend("agg")
 import numpy as np
 import pandas as pd
 from numpy.polynomial import Polynomial

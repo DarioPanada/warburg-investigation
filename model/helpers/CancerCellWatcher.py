@@ -1,25 +1,30 @@
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+plt.switch_backend("agg")
+
 import numpy as np
 from panaxea.core.Steppables import Helper
 
-plt.switch_backend("agg")
-
 
 class CancerCellWatcher(Helper, object):
-    '''
+    """
     Cancer cell watcher object. Collects average average hif expression rates,
     vegf secretion rate, metabolic rate
     and pSynthesis. Creates appropriate keys in model.outputs[
     "cancerCellProperties"] to store such values
     at each epoch
 
-    :param model - The model object
-    :param cancerCellClassName - Name of the class used to represent cancer
-    cells (defaults to CancerCell)
-    :param distributionInterval - A value n such that a snapshot of HIF
-    Rates distribution will be taken every n epochs
-    (defaults to 1)
-    '''
+    Attributes
+    ----------
+    model : Model
+        The model instance
+    cancer_cell_class_name : string, optional
+        The name of the cancer cell class, defaults to Cancer Cell
+    distribution_interval : int, optional
+        A value n such that a snapshot of HIF Rates distribution will be taken
+        every n epochs. Optional, defaults to 1
+    """
 
     def __init__(self, model, cancerCellClassName="CancerCell",
                  distributionInterval=1):

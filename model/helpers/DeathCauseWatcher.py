@@ -1,12 +1,23 @@
 import numpy as np
 from panaxea.core.Steppables import Helper
 
-'''
-Used to track at each epoch what the CUMULATIVE cause of cancer cell death is.
-'''
-
 
 class DeathCauseWatcher(Helper, object):
+    """
+    Used to track at each epoch what the CUMULATIVE cause of cancer cell
+    death is.
+
+    An appropriate key "causesOfDeath" is created in the model's output as a
+    list. At each epoch, a dictionary where each key is a cause of cell
+    death is appended to such a list.
+
+    Attributes
+    ----------
+    model: Model
+        The model instance
+    interval : int
+        Every how many epochs a "snapshot" should be taken.
+    """
 
     def __init__(self, model, interval):
         model.output["causesOfDeath"] = []

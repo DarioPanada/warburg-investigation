@@ -1,8 +1,10 @@
 import matplotlib
-import matplotlib.pyplot as plt
-from numpy.polynomial import Polynomial
 
 matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+plt.switch_backend("agg")
+from numpy.polynomial import Polynomial
 
 
 class OxygenHIFRelationsGenerator():
