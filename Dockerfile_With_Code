@@ -1,7 +1,6 @@
 FROM continuumio/anaconda2:5.3.0
 USER root
 RUN apt-get install git
-ENV AWS_DEFAULT_REGION us-east-2
 
 # Copying code in container
 RUN mkdir /warburg-investigation
