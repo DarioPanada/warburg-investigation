@@ -37,7 +37,7 @@ This is a quick guide on how to run the experiments end-to-end.
 
 ### Simulation Setup
 
-The experiments file is in ./experiments/experiments_warburg.csv . For each simulation, this details all parameter values.
+The experiments file is in `./experiments/experiments_warburg.csv` . For each simulation, this details all parameter values.
 
 ### Running the Simulations
 
