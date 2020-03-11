@@ -211,3 +211,6 @@ dmypy.json
 
 reports
 !reports/.gitkeep
+
+analysis
+!analysis/.gitkeep

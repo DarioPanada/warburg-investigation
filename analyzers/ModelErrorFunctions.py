@@ -231,12 +231,16 @@ def visualize_actual_vs_expected_curves(rep, max_epochs, epoch_duration,
     plt.close()
 
 
-def add_ame_to_experiments(experiment_file, reports_dir, max_epochs,
-                           epoch_duration, out_file):
+def match_experiments_to_output(reports_dir, experiment_file):
     """
     Given an input experiment csv file and a directory containing model
-    reports, will produce a new csv file identical to the input one but with an
-    additional column for absolute mean error. (ame)
+    reports, will return a dictionary with a key corresponding to the name of
+    each experiment with a matching report.
+
+    The value of each entry will itself be a dictionary, which will contain
+    keys "definition", pointing to a list of parameter values (in the same
+    order as presented in the experiment file), and "model", containing the
+    depickled model instance found in the report directory.
 
     Parameters
     ----------
@@ -250,13 +254,15 @@ def add_ame_to_experiments(experiment_file, reports_dir, max_epochs,
         end.
     max_epochs : int
         The maximum number of epochs the simulation is intended to run f
-    epoch_duration : int
-        The duration of each epoch in hours
-    out_file : string
-        Path to the csv file you wish to use as output. If this does not exist,
-        it will be created.
-    """
 
+    Returns
+    ----------
+    dict
+        A dictionary of experiment definitions and model instances,
+        as detailed above
+    list
+        A list of column headers
+    """
     if reports_dir.endswith("/"):
         reports_dir = reports_dir[:-1]
 
@@ -264,7 +270,7 @@ def add_ame_to_experiments(experiment_file, reports_dir, max_epochs,
     reports = [r for r in os.listdir(reports_dir)
                if os.path.isdir(reports_dir + "/" + r)]
 
-    experiments_with_ame = []
+    matched_experiments = {}
 
     for _, experiment_definition in experiment_definitions.iterrows():
         experiment_name = experiment_definition["name"]
@@ -293,21 +299,124 @@ def add_ame_to_experiments(experiment_file, reports_dir, max_epochs,
             pickle = pickles[0]
             pickle_path = reports_dir + "/" + experiment_name + "/" + pickle
             model = depickle_from_lite(pickle_path)
-            error_series = get_error_series(model, max_epochs,
-                                            epoch_duration)
-            absolute_error_series = map(abs, error_series)
-            absolute_mean_error = np.mean(absolute_error_series)
+            matched_experiments[experiment_name] = {
+                "definition": list(experiment_definition),
+                "model": model
+            }
 
-            experiment_as_list = list(experiment_definition)
-            experiment_as_list.append(absolute_mean_error)
-            experiments_with_ame.append(experiment_as_list)
+    return matched_experiments, list(experiment_definitions.columns.values)
 
-    columns = list(experiment_definitions.columns.values)
-    columns.append("ame")
+
+def add_error_series_to_experiments(experiment_file, reports_dir, out_file):
+    """
+    Given an input experiment csv file and a directory containing model
+    reports, will produce a new csv file identical to the input one but with
+    an additional column per simulation epoch which will indicate the error
+    for each experiment at that epoch.
+
+    Parameters
+    ----------
+    experiment_file : string
+        Path to the input csv file
+    reports_dir : string
+        Path to the directory that contains the experiment reports. Each report
+        should take the form of a directory named as the experiment (Ie: as
+        the name column in the input csv), which should contain in the top
+        level a single .pickle file which is the pickled model at simulation
+        end.
+    out_file : string
+        Path to the csv file you wish to use as output. If this does not exist,
+        it will be created.
+    """
+    matched_experiments, experiments_header = match_experiments_to_output(
+        reports_dir,
+        experiment_file
+    )
+
+    experiments_with_error_series = []
+
+    matched_experiment_names = matched_experiments.keys()
+
+    num_epochs = None
+
+    for matched_experiment_name in matched_experiment_names:
+        matched_experiment = matched_experiments[matched_experiment_name]
+        experiment_definition = matched_experiment["definition"]
+        model = matched_experiment["model"]
+
+        error_series = get_error_series(model, max_epochs,
+                                        epoch_duration)
+
+        if num_epochs is None:
+            num_epochs = len(error_series)
+
+        experiment_definition = experiment_definition + error_series
+        experiments_with_error_series.append(experiment_definition)
+
+    num_epochs = list(range(len(error_series)))
+    experiments_header = experiments_header + num_epochs
+
+    experiments_with_error_series_df = pd.DataFrame(
+        experiments_with_error_series,
+        columns=experiments_header
+    )
+
+    experiments_with_error_series_df.to_csv(out_file, index=False)
+
+
+def add_ame_to_experiments(experiment_file, reports_dir, max_epochs,
+                           epoch_duration, out_file):
+    """
+    Given an input experiment csv file and a directory containing model
+    reports, will produce a new csv file identical to the input one but with an
+    additional column for absolute mean error. (ame)
+
+    Parameters
+    ----------
+    experiment_file : string
+        Path to the input csv file
+    reports_dir : string
+        Path to the directory that contains the experiment reports. Each report
+        should take the form of a directory named as the experiment (Ie: as
+        the name column in the input csv), which should contain in the top
+        level a single .pickle file which is the pickled model at simulation
+        end.
+    max_epochs : int
+        The maximum number of epochs the simulation is intended to run f
+    epoch_duration : int
+        The duration of each epoch in hours
+    out_file : string
+        Path to the csv file you wish to use as output. If this does not exist,
+        it will be created.
+    """
+
+    matched_experiments, experiments_header = match_experiments_to_output(
+        reports_dir,
+        experiment_file
+    )
+
+    experiments_with_ame = []
+
+    matched_experiment_names = matched_experiments.keys()
+
+    for matched_experiment_name in matched_experiment_names:
+        matched_experiment = matched_experiments[matched_experiment_name]
+        experiment_definition = matched_experiment["definition"]
+        model = matched_experiment["model"]
+
+        error_series = get_error_series(model, max_epochs,
+                                        epoch_duration)
+        absolute_error_series = map(abs, error_series)
+        absolute_mean_error = np.mean(absolute_error_series)
+
+        experiment_definition.append(absolute_mean_error)
+        experiments_with_ame.append(experiment_definition)
+
+    experiments_header.append("ame")
 
     experiments_with_ame_df = pd.DataFrame(
         experiments_with_ame,
-        columns=columns
+        columns=experiments_header
     )
 
     experiments_with_ame_df.to_csv(out_file, index=False)
@@ -317,20 +426,29 @@ if __name__ == "__main__":
 
     demo_curve_comparison_output = False
     demo_ame_calculation = False
+    demo_add_ame = True
+    demo_add_error_series = True
 
     # Sample error calculation and displaying
     max_epochs = 300
     epoch_duration = 2
 
     reports_dir = "../reports/"
+    if demo_add_ame:
+        add_ame_to_experiments(
+            "../experiments/experiments_warburg.csv",
+            "../reports",
+            max_epochs,
+            epoch_duration,
+            "../analysis/experiments_warburg.csv"
+        )
 
-    add_ame_to_experiments(
-        "../experiments/experiments_warburg.csv",
-        "../reports",
-        max_epochs,
-        epoch_duration,
-        "../analysis/experiments_warburg.csv"
-    )
+    if demo_add_error_series:
+        add_error_series_to_experiments(
+            "../experiments/experiments_warburg.csv",
+            "../reports",
+            "../analysis/experiments_warburg_error_series.csv"
+        )
 
     if demo_curve_comparison_output or demo_ame_calculation:
         experiment_dirs = [d for d in os.listdir(reports_dir)
