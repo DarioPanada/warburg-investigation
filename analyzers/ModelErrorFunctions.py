@@ -1,7 +1,9 @@
 import matplotlib
 import matplotlib.pyplot as plt
-import os
 import numpy as np
+import os
+import pandas as pd
+
 matplotlib.use("Agg")
 
 plt.switch_backend("agg")
@@ -229,38 +231,137 @@ def visualize_actual_vs_expected_curves(rep, max_epochs, epoch_duration,
     plt.close()
 
 
-if __name__ == "__main__":
-    # Sample error calculation and displaying
+def add_ame_to_experiments(experiment_file, reports_dir, max_epochs,
+                           epoch_duration, out_file):
+    """
+    Given an input experiment csv file and a directory containing model
+    reports, will produce a new csv file identical to the input one but with an
+    additional column for absolute mean error. (ame)
 
+    Parameters
+    ----------
+    experiment_file : string
+        Path to the input csv file
+    reports_dir : string
+        Path to the directory that contains the experiment reports. Each report
+        should take the form of a directory named as the experiment (Ie: as
+        the name column in the input csv), which should contain in the top
+        level a single .pickle file which is the pickled model at simulation
+        end.
+    max_epochs : int
+        The maximum number of epochs the simulation is intended to run f
+    epoch_duration : int
+        The duration of each epoch in hours
+    out_file : string
+        Path to the csv file you wish to use as output. If this does not exist,
+        it will be created.
+    """
+
+    if reports_dir.endswith("/"):
+        reports_dir = reports_dir[:-1]
+
+    experiment_definitions = pd.read_csv(experiment_file)
+    reports = [r for r in os.listdir(reports_dir)
+               if os.path.isdir(reports_dir + "/" + r)]
+
+    experiments_with_ame = []
+
+    for _, experiment_definition in experiment_definitions.iterrows():
+        experiment_name = experiment_definition["name"]
+
+        if experiment_name in reports:
+            print("Processing {0}".format(experiment_name))
+            print("Attempting to load pickle...")
+
+            pickles = [f
+                       for f in os.listdir(reports_dir + "/" + experiment_name)
+                       if f.endswith(".pickle")]
+
+            num_pickles = len(pickles)
+
+            if num_pickles == 0:
+                print("No pickle found, skipping")
+                continue
+
+            if num_pickles > 1:
+                print("Found more than 1 pikckle ({0}), skipping: {1}".format(
+                    num_pickles,
+                    ",".join(pickles)
+                ))
+                continue
+
+            pickle = pickles[0]
+            pickle_path = reports_dir + "/" + experiment_name + "/" + pickle
+            model = depickle_from_lite(pickle_path)
+            error_series = get_error_series(model, max_epochs,
+                                            epoch_duration)
+            absolute_error_series = map(abs, error_series)
+            absolute_mean_error = np.mean(absolute_error_series)
+
+            experiment_as_list = list(experiment_definition)
+            experiment_as_list.append(absolute_mean_error)
+            experiments_with_ame.append(experiment_as_list)
+
+    columns = list(experiment_definitions.columns.values)
+    columns.append("ame")
+
+    experiments_with_ame_df = pd.DataFrame(
+        experiments_with_ame,
+        columns=columns
+    )
+
+    experiments_with_ame_df.to_csv(out_file, index=False)
+
+
+if __name__ == "__main__":
+
+    demo_curve_comparison_output = False
+    demo_ame_calculation = False
+
+    # Sample error calculation and displaying
     max_epochs = 300
     epoch_duration = 2
 
     reports_dir = "../reports/"
-    experiment_dirs = [d for d in os.listdir(reports_dir)
-                       if os.path.isdir(reports_dir + d)]
-    print("The following {0} experiment directories were found: {1}".format(
-        len(experiment_dirs),
-        experiment_dirs))
 
-    # Going through each experiment
-    for experiment_dir in experiment_dirs:
-        full_path = reports_dir + experiment_dir
+    add_ame_to_experiments(
+        "../experiments/experiments_warburg.csv",
+        "../reports",
+        max_epochs,
+        epoch_duration,
+        "../analysis/experiments_warburg.csv"
+    )
 
-        # Assuming one pickle file per directory
-        pickle = [reports_dir + experiment_dir + "/" + f
-                  for f in os.listdir(full_path)
-                  if f.endswith(".pickle")][0]
-        model = depickle_from_lite(pickle)
+    if demo_curve_comparison_output or demo_ame_calculation:
+        experiment_dirs = [d for d in os.listdir(reports_dir)
+                           if os.path.isdir(reports_dir + d)]
+        print(
+            "The following {0} experiment directories were found: {1}".format(
+                len(experiment_dirs),
+                experiment_dirs))
 
-        visualize_actual_vs_expected_curves(
-            model,
-            max_epochs,
-            epoch_duration,
-            show_figure=False,
-            out_path=experiment_dir + ".jpg")
+        # Going through each experiment
+        for experiment_dir in experiment_dirs:
+            full_path = reports_dir + experiment_dir
 
-        error_series = get_error_series(model, max_epochs, epoch_duration)
-        abs_errors = map(abs, error_series)
-        mean_error = np.mean(abs_errors)
-        print(experiment_dir)
-        print("Mean Error: {0} mm3".format(round(mean_error, 2)))
+            # Assuming one pickle file per directory
+            pickle = [reports_dir + experiment_dir + "/" + f
+                      for f in os.listdir(full_path)
+                      if f.endswith(".pickle")][0]
+            model = depickle_from_lite(pickle)
+
+            if demo_curve_comparison_output:
+                visualize_actual_vs_expected_curves(
+                    model,
+                    max_epochs,
+                    epoch_duration,
+                    show_figure=False,
+                    out_path=experiment_dir + ".jpg")
+
+            if demo_curve_comparison_output:
+                error_series = get_error_series(model, max_epochs,
+                                                epoch_duration)
+                abs_errors = map(abs, error_series)
+                mean_error = np.mean(abs_errors)
+                print(experiment_dir)
+                print("Mean Error: {0} mm3".format(round(mean_error, 2)))
