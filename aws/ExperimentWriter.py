@@ -74,11 +74,13 @@ def write_experiment_to_queue(queue_url, experiment, exp_name, exp_group,
 
 if __name__ == "__main__":
 
-    experiment_file = "experiments_sample_reduced.csv"
-    queue_url = "https://sqs.us-east-2.amazonaws.com/746221766782/test-queue" \
+    experiment_dir = "../experiments"
+    experiment_file = "experiments_warburg.csv"
+    queue_url = "https://sqs.us-east-2.amazonaws.com/746221766782/warburg" \
                 ".fifo"
-    group = experiment_file.split(".")[0]
-    with open(experiment_file, 'r') as f:
+    group = experiment_file.split(".")[-1]
+    experiment_path = experiment_dir + "/" + experiment_file
+    with open(experiment_path, 'r') as f:
         for n, line in enumerate(f):
             line = line.replace("\n", "")
             if n == 0:
