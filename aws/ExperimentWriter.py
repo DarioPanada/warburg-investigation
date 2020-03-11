@@ -78,7 +78,7 @@ if __name__ == "__main__":
     experiment_file = "experiments_warburg.csv"
     queue_url = "https://sqs.us-east-2.amazonaws.com/746221766782/warburg" \
                 ".fifo"
-    group = experiment_file.split(".")[-1]
+    group = experiment_file.split(".")[0]
     experiment_path = experiment_dir + "/" + experiment_file
     with open(experiment_path, 'r') as f:
         for n, line in enumerate(f):

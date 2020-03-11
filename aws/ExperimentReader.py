@@ -1,8 +1,7 @@
-import time
-from collections import defaultdict
-
 import boto3
 import pandas as pd
+import time
+from collections import defaultdict
 
 sqs = boto3.client('sqs')
 
@@ -18,6 +17,12 @@ def read_experiment_from_queue(queue_url, experiments_dir, num_experiments=1):
         The directory where the csv files will be saved
     num_experiments : int
         Number of messages to download
+
+    Returns
+    ----------
+    string
+        Path of the produced csv string, or None if there are no experiments
+        left on the queue.
     """
     # Retrieving experiments
     response = sqs.receive_message(
@@ -90,7 +95,7 @@ def read_experiment_from_queue(queue_url, experiments_dir, num_experiments=1):
             ReceiptHandle=receipt
         )
 
-    print("...all done")
+    return output_path
 
 
 if __name__ == "__main__":
