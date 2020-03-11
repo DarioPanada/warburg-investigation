@@ -76,3 +76,4 @@ A jupyter notebook, `./analyzers/Warburg Analysis.ipynb` is provided. In order t
 
 - Finish documenting all methods;
 - Add config such as directory names, num epcochs, etc to config file (JSON or YAML);
+- Add try/catch to model execution for AWS and log errors to a queue for easy visualization;
