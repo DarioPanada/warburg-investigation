@@ -75,4 +75,4 @@ A jupyter notebook, `./analyzers/Warburg Analysis.ipynb` is provided. In order t
 ## TODO
 
 - Finish documenting all methods;
-- Add a launcher that obtains experiments from queue and, upon completion, uploads result to a bucket;
+- Add config such as directory names, num epcochs, etc to config file (JSON or YAML);
