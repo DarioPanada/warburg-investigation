@@ -353,8 +353,8 @@ def add_error_series_to_experiments(experiment_file, reports_dir, out_file):
         experiment_definition = experiment_definition + error_series
         experiments_with_error_series.append(experiment_definition)
 
-    num_epochs = list(range(len(error_series)))
-    experiments_header = experiments_header + num_epochs
+    epochs = ["epoch_{0}".format(e) for e in list(range(num_epochs))]
+    experiments_header = experiments_header + epochs
 
     experiments_with_error_series_df = pd.DataFrame(
         experiments_with_error_series,
@@ -424,31 +424,35 @@ def add_ame_to_experiments(experiment_file, reports_dir, max_epochs,
 
 if __name__ == "__main__":
 
-    demo_curve_comparison_output = False
-    demo_ame_calculation = False
-    demo_add_ame = True
-    demo_add_error_series = True
+
+    add_ame = True
+    add_error_series = True
 
     # Sample error calculation and displaying
     max_epochs = 300
     epoch_duration = 2
+    experiments_file = "../experiments/experiments_warburg.csv"
 
     reports_dir = "../reports/"
-    if demo_add_ame:
+    if add_ame:
         add_ame_to_experiments(
-            "../experiments/experiments_warburg.csv",
-            "../reports",
+            experiments_file,
+            reports_dir,
             max_epochs,
             epoch_duration,
             "../analysis/experiments_warburg.csv"
         )
 
-    if demo_add_error_series:
+    if add_error_series:
         add_error_series_to_experiments(
-            "../experiments/experiments_warburg.csv",
-            "../reports",
+            experiments_file,
+            reports_dir,
             "../analysis/experiments_warburg_error_series.csv"
         )
+
+    # Demo of individual functions below, switch flags as appropriate
+    demo_curve_comparison_output = False
+    demo_ame_calculation = False
 
     if demo_curve_comparison_output or demo_ame_calculation:
         experiment_dirs = [d for d in os.listdir(reports_dir)
