@@ -276,7 +276,8 @@ def generate_model(properties, numEpochs):
         GlucoseConcentrationWatcher(model, interval=snapshot_interval))
     model.schedule.helpers.append(
         DeathCauseWatcher(model, interval=snapshot_interval))
-    model.schedule.helpers.append(ModelPicklerLite(model.properties["outDir"]))
+    model.schedule.helpers.append(ModelPicklerLite(model.properties["outDir"],
+                                                   pickle_every=400))
 
     def num_agents_exit_condition(model):
         return len([a for a in model.schedule.agents if
