@@ -12,8 +12,9 @@ experiments_file = read_experiment_from_queue(
     num_experiments=1
 )
 
+run_analysis = True
+
 while experiments_file is not None:
-    print(experiments_file)
 
     experiments_file = read_experiment_from_queue(
         queue_url,
@@ -43,8 +44,9 @@ while experiments_file is not None:
         model = generate_model(properties, num_epochs)
         print("Simulating...")
         model.run()
-        print("Running analysis...")
-        get_post_execution_analysis(experiment_dir)
+        if run_analysis:
+            print("Running analysis...")
+            get_post_execution_analysis(experiment_dir)
         print("Uploading to bucket")
         upload_command = "aws s3 sync {0} s3://panaxea-warburg-results/{1}" \
             .format(

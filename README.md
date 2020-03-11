@@ -52,7 +52,13 @@ Perhaps more importantly, the report directory will contain a *.pickle* file. Th
 
 #### Running on AWS
 
-TODO
+Experiments should first be uploaded to a queue using `./aws/ExperimentWriter.py`. A stub is provided but essentially every experiment will become a message.
+
+`./Main_AWS.py` should be used to run simulations. The script will download experiments from a queue, run the simulation and upload the report directory to an S3 bucket.
+
+Once all simulations have completed, the AWS cli (`aws s3 sync s3://selected-bucket ./reports_dir`) can be used to download all reports.
+
+Then, the normal analysis procedure detailed below can be used to generate output csvs and complete analysis.
 
 ### Running the Analysis
 
