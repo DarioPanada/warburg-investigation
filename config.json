@@ -1,0 +1,14 @@
+{
+  "experiments_dir": "experiments",
+  "experiment_file": "experiments_warburg.csv",
+  "output_dir": "reports",
+  "analysis_dir": "analysis",
+  "mean_error_csv": "experiments_warburg.csv",
+  "error_series_csv": "experiments_warburg_error_series.csv",
+  "num_epochs": 2,
+  "aws": {
+    "output_bucket": "s3://panaxea-warburg-results",
+    "experiments_queue": "https://sqs.us-east-2.amazonaws.com/746221766782/warburg.fifo"
+  }
+}
+

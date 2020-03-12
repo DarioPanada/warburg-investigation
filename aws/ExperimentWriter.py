@@ -1,7 +1,7 @@
-import hashlib
-from random import randint
-
 import boto3
+import hashlib
+import json
+from random import randint
 
 sqs = boto3.client('sqs')
 
@@ -74,10 +74,13 @@ def write_experiment_to_queue(queue_url, experiment, exp_name, exp_group,
 
 if __name__ == "__main__":
 
-    experiment_dir = "../experiments"
-    experiment_file = "experiments_warburg.csv"
-    queue_url = "https://sqs.us-east-2.amazonaws.com/746221766782/warburg" \
-                ".fifo"
+    with open("../config.json", "r") as f:
+        config = json.load(f)
+        f.close()
+
+    experiment_dir = "../{0}".format(config["experiments_dir"])
+    experiment_file = config["experiment_file"]
+    queue_url = config["aws"]["experiments_queue"]
     group = experiment_file.split(".")[0]
     experiment_path = experiment_dir + "/" + experiment_file
     with open(experiment_path, 'r') as f:

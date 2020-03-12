@@ -1,3 +1,4 @@
+import json
 import os
 import pandas as pd
 
@@ -5,10 +6,18 @@ from analyzers.SingleReportModelAnalyzers import get_post_execution_analysis
 from aws.ExperimentReader import read_experiment_from_queue
 from model.models.model_warburg import *
 
-queue_url = "https://sqs.us-east-2.amazonaws.com/746221766782/warburg.fifo"
+with open("config.json", "r") as f:
+    config = json.load(f)
+    f.close()
+
+queue_url = config["aws"]["experiments_queue"]
+experiments_dir = config["experiments_dir"]
+output_dir = config["output_dir"]
+num_epochs = config["num_epochs"]
+
 experiments_file = read_experiment_from_queue(
     queue_url,
-    "./experiments",
+    experiments_dir,
     num_experiments=1
 )
 
@@ -18,14 +27,11 @@ while experiments_file is not None:
 
     experiments_file = read_experiment_from_queue(
         queue_url,
-        "./experiments",
+        experiments_dir,
         num_experiments=1
     )
 
     experiments = pd.read_csv(experiments_file).to_dict(orient="records")
-
-    num_epochs = 2
-    output_dir = "reports"
 
     print("There are {0} experiments".format(len(experiments)))
 

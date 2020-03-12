@@ -1,4 +1,5 @@
 import boto3
+import json
 import pandas as pd
 import time
 from collections import defaultdict
@@ -99,6 +100,9 @@ def read_experiment_from_queue(queue_url, experiments_dir, num_experiments=1):
 
 
 if __name__ == "__main__":
-    queue_url = "https://sqs.us-east-2.amazonaws.com/746221766782/test-queue" \
-                ".fifo"
+    with open("../config.json", "r") as f:
+        config = json.load(f)
+        f.close()
+
+    queue_url = config["aws"]["experiments_queue"]
     read_experiment_from_queue(queue_url, ".", num_experiments=1)

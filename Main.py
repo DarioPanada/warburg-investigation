@@ -2,16 +2,24 @@ import os
 import pandas as pd
 from analyzers.SingleReportModelAnalyzers import get_post_execution_analysis
 from model.models.model_warburg import *
+import json
 
-experiments_file = "experiments/experiments_warburg.csv"
+with open("config.json", "r") as f:
+    config = json.load(f)
+    f.close()
+
+experiments_file = "{0}/{1}".format(
+    config["experiments_dir"],
+    config["experiment_file"])
+
 experiments = pd.read_csv(experiments_file).to_dict(orient="records")
 
-num_epochs = 5
-output_dir = "reports"
+num_epochs = config["num_epochs"]
+output_dir = config["output_dir"]
 
 print("There are {0} experiments".format(len(experiments)))
 
-for experiment in experiments[:5]:
+for experiment in experiments:
 
     experiment_dir = "{0}/{1}".format(output_dir, experiment["name"])
 

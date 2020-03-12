@@ -1,3 +1,4 @@
+import json
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -424,6 +425,9 @@ def add_ame_to_experiments(experiment_file, reports_dir, max_epochs,
 
 if __name__ == "__main__":
 
+    with open("../config.json", "r") as f:
+        config = json.load(f)
+        f.close()
 
     add_ame = True
     add_error_series = True
@@ -431,23 +435,36 @@ if __name__ == "__main__":
     # Sample error calculation and displaying
     max_epochs = 300
     epoch_duration = 2
-    experiments_file = "../experiments/experiments_warburg.csv"
+    experiments_file = "../{0}/{1}".format(
+        config["experiments_dir"],
+        config["experiment_file"]
+    )
 
-    reports_dir = "../reports/"
+    analysis_dir = config["analysis_dir"]
+    mean_error_csv = config["mean_error_csv"]
+    error_series_csv = config["error_series_csv"]
+
+    reports_dir = "../{0}".format(config["output_dir"])
     if add_ame:
         add_ame_to_experiments(
             experiments_file,
             reports_dir,
             max_epochs,
             epoch_duration,
-            "../analysis/experiments_warburg.csv"
+            "../{0}/{1}".format(
+                analysis_dir,
+                mean_error_csv
+            )
         )
 
     if add_error_series:
         add_error_series_to_experiments(
             experiments_file,
             reports_dir,
-            "../analysis/experiments_warburg_error_series.csv"
+            "../{0}/{1}".format(
+                analysis_dir,
+                error_series_csv
+            )
         )
 
     # Demo of individual functions below, switch flags as appropriate
