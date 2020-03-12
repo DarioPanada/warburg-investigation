@@ -62,6 +62,8 @@ Once all simulations have completed, the AWS cli (`aws s3 sync s3://selected-buc
 
 Then, the normal analysis procedure detailed below can be used to generate output csvs and complete analysis.
 
+While running on aws, simulations will be sending "heartbeat" signals (detailig they are still alive) and exceptions to aws queues. `./aws/CloudWatcher.py` has a function to read messages from these queues and save output to a csv. A stub is also provided for easy execution.
+
 ### Running the Analysis
 
 There are two useful functions in `./analyzers/ModelErrorFunctions.py`. 

@@ -214,3 +214,6 @@ reports
 
 analysis
 !analysis/.gitkeep
+
+aws/cloud_logs
+!aws/cloud_logs.gitkeep
