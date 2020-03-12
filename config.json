@@ -9,7 +9,9 @@
   "aws": {
     "output_bucket": "s3://panaxea-warburg-results",
     "experiments_queue": "https://sqs.us-east-2.amazonaws.com/746221766782/warburg.fifo",
-    "exceptions_queue": "https://sqs.us-east-2.amazonaws.com/746221766782/warburg-exceptions.fifo"
+    "exceptions_queue": "https://sqs.us-east-2.amazonaws.com/746221766782/warburg-exceptions.fifo",
+    "messages_queue": "https://sqs.us-east-2.amazonaws.com/746221766782/warburg-messages.fifo",
+    "hearbeat_interval": 1
   }
 }
 

@@ -77,4 +77,3 @@ A jupyter notebook, `./analyzers/Warburg Analysis.ipynb` is provided. In order t
 ## TODO
 
 - Finish documenting all methods;
-- Add try/catch to model execution for AWS and log errors to a queue for easy visualization;

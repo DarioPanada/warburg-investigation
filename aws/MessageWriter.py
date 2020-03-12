@@ -4,7 +4,7 @@ import random
 sqs = boto3.client('sqs')
 
 
-def write_message_to_queue(queue_url, experiment_name, exception_text,
+def write_message_to_queue(queue_url, experiment_name, message_text,
                            model):
     """
     Writes an experiment to an aws queue.
@@ -15,8 +15,8 @@ def write_message_to_queue(queue_url, experiment_name, exception_text,
         AWS queue url
     experiment_name : string
         Name of the experiment that raised the exception
-    exception_text : string
-        String representation of the exception
+    message_text : string
+        Message to write
     model : Model
         Current model instance when the exception was raised.
     """
@@ -39,14 +39,14 @@ def write_message_to_queue(queue_url, experiment_name, exception_text,
     response = sqs.send_message(
         QueueUrl=queue_url,
         MessageAttributes=attributes,
-        MessageBody=exception_text,
+        MessageBody=message_text,
         MessageGroupId=message_group_id,
         MessageDeduplicationId=str(time.time())+str(random.random())
 
     )
 
     print("I have written message {0} with response {1}".format(
-        exception_text, response["ResponseMetadata"]["HTTPStatusCode"]))
+        message_text, response["ResponseMetadata"]["HTTPStatusCode"]))
 
     if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
         print("Something went wrong! Full response:")

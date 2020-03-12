@@ -30,6 +30,7 @@ for experiment in experiments:
     print("Configuring...")
     properties = generate_properties(experiment)
     properties["outDir"] = experiment_dir
+    properties["config"] = config
     print("Generating model...")
     model = generate_model(properties, num_epochs)
     print("Simulating...")

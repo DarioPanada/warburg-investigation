@@ -7,6 +7,7 @@ from model.agents.CancerCell import CancerCell
 from model.agents.EndothelialCell import TipCell
 from model.agents.HealthyCell import HealthyCell
 from model.helpers.AgentCounter import AgentCounter
+from model.helpers.HeartbeatHelper import HeartbeatHelper
 from model.helpers.CancerCellWatcher import CancerCellWatcher
 from model.helpers.DeathCauseWatcher import DeathCauseWatcher
 from model.helpers.ExitConditionWatcher import ExitConditionWatcher
@@ -41,6 +42,8 @@ def generate_properties(p):
     """
 
     properties = dict()
+
+    properties["name"] = p["name"]
 
     initial_agent_setup = dict()
 
@@ -256,7 +259,9 @@ def generate_model(properties, numEpochs):
                                             "agentEnvName"], (x, y, z), model)
                     model.schedule.agents.add(c)
 
-    # Adding diffusion helpers
+    # Adding helpers
+    model.schedule.helpers.append(HeartbeatHelper())
+
     model.schedule.helpers.append(GlucoseDiffusionHelper(model))
 
     odh = OxygenDiffusionHelper(model)
