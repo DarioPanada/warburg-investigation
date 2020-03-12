@@ -10,7 +10,9 @@ def download_from_queue(queue_url, out_file):
     """
     Downloads up to 5 messages from a queue, outputs their value to a csv in
     format:
-    experiment_name, epoch, body
+
+    timestamp,experiment_name, epoch, body
+
     Parameters
     ----------
     queue_url : string
@@ -28,7 +30,7 @@ def download_from_queue(queue_url, out_file):
         MessageAttributeNames=[
             'All'
         ],
-        VisibilityTimeout=100,
+        VisibilityTimeout=1,
         WaitTimeSeconds=0
     )
 
@@ -45,8 +47,9 @@ def download_from_queue(queue_url, out_file):
         attributes = message["MessageAttributes"]
         epoch = attributes["epoch"]["StringValue"]
         experiment_name = attributes["experiment_name"]["StringValue"]
+        timestamp = attributes["timestamp"]["StringValue"]
 
-        message_as_list = [experiment_name, epoch, body]
+        message_as_list = [timestamp, experiment_name, epoch, body]
         messages_as_list.append(message_as_list)
 
         receipt = message['ReceiptHandle']
@@ -55,7 +58,8 @@ def download_from_queue(queue_url, out_file):
             QueueUrl=queue_url,
             ReceiptHandle=receipt
         )
-        print("Experiment: {0}, Epoch: {1}, Body: {2}".format(
+        print("Timestamp: {0} Experiment: {1}, Epoch: {2}, Body: {3}".format(
+            timestamp,
             experiment_name,
             epoch,
             body
@@ -65,7 +69,7 @@ def download_from_queue(queue_url, out_file):
 
     with open(out_file, "a") as f:
         if write_header:
-            header = "experiment_name,epoch,body\n"
+            header = "timestamp,experiment_name,epoch,body\n"
             f.write(header)
 
         for message_as_list in messages_as_list:

@@ -1,6 +1,8 @@
 import boto3
-import time
+import datetime
 import random
+import time
+
 sqs = boto3.client('sqs')
 
 
@@ -29,6 +31,10 @@ def write_message_to_queue(queue_url, experiment_name, message_text,
         "epoch": {
             "DataType": "String",
             "StringValue": str(model.current_epoch)
+        },
+        "timestamp": {
+            "DataType": "String",
+            "StringValue": str(datetime.datetime.now().isoformat())
         }
     }
 
@@ -41,7 +47,7 @@ def write_message_to_queue(queue_url, experiment_name, message_text,
         MessageAttributes=attributes,
         MessageBody=message_text,
         MessageGroupId=message_group_id,
-        MessageDeduplicationId=str(time.time())+str(random.random())
+        MessageDeduplicationId=str(time.time()) + str(random.random())
 
     )
 
