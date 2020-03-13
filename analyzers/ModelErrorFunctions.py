@@ -433,8 +433,8 @@ if __name__ == "__main__":
     add_error_series = True
 
     # Sample error calculation and displaying
-    max_epochs = 300
-    epoch_duration = 2
+    max_epochs = config["num_epochs"]
+    epoch_duration = config["epoch_duration"]
     experiments_file = "../{0}/{1}".format(
         config["experiments_dir"],
         config["experiment_file"]
