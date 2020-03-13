@@ -47,7 +47,7 @@ while experiments_file is not None:
 
     # If there are no further experiments on the queue
     if len(experiments_from_queue) == 0:
-        num_active_experiments = os.listdir(experiment_dir)
+        num_active_experiments = os.listdir(experiments_dir)
         # And no other process is working on an experiment
         if num_active_experiments == 0:
             # Terminate the instance and the associated spot request
