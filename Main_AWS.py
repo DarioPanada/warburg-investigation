@@ -30,7 +30,8 @@ while True:
 
     # If there are no further experiments on the queue
     if experiments_file is None:
-        num_active_experiments = os.listdir(experiments_dir)
+        num_active_experiments = len([f for f in os.listdir(output_dir)
+                                  if "gitkeep" not in f])
         # And no other process is working on an experiment
         if num_active_experiments == 0:
             # Terminate the instance and the associated spot request

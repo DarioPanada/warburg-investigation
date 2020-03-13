@@ -62,7 +62,7 @@ def download_from_queue(queue_url, out_file):
             QueueUrl=queue_url,
             ReceiptHandle=receipt
         )
-        print("Instance Id: {0}, Request Id: {1], Timestamp: {2}"
+        print("Instance Id: {0}, Request Id: {1}, Timestamp: {2}"
               "Experiment: {3}, Epoch: {4},"
               "Body: {5}".format(
                 instance_id,

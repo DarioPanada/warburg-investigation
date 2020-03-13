@@ -1,5 +1,4 @@
 import boto3
-import json
 import os
 
 
@@ -35,10 +34,6 @@ def get_instance_and_spot_request_id():
 
 def terminate_instance_and_spot_request(instance_id, spot_request_id):
     ec2 = boto3.client('ec2')
-
-    with open("../config.json") as f:
-        config = json.load(f)
-        f.close()
 
     response = ec2.cancel_spot_instance_requests(
         DryRun=False,
