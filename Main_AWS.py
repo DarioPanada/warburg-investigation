@@ -1,14 +1,5 @@
 mport
 json
-import os
-import pandas as pd
-
-from analyzers.SingleReportModelAnalyzers import get_post_execution_analysis
-from aws.ExperimentReader import read_experiment_from_queue
-from model.models.model_warburg import *
-from aws.MessageWriter import write_message_to_queue
-from aws.Common import terminate_instance_and_spot_request, \
-    get_instance_and_spot_request_id
 
 import json
 import os
@@ -30,23 +21,18 @@ experiments_dir = config["experiments_dir"]
 output_dir = config["output_dir"]
 num_epochs = config["num_epochs"]
 
-experiments_file = read_experiment_from_queue(
-    queue_url,
-    experiments_dir,
-    num_experiments=1
-)
-
 run_analysis = True
 
-while experiments_file is not None:
+while True:
 
-    experiments_from_queue = pd.read_csv(experiments_file).to_dict(
-        orient="records")
-
-    print("There are {0} experiments".format(len(experiments_from_queue)))
+    experiments_file = read_experiment_from_queue(
+        queue_url,
+        experiments_dir,
+        num_experiments=1
+    )
 
     # If there are no further experiments on the queue
-    if len(experiments_from_queue) == 0:
+    if experiments_file is None:
         num_active_experiments = os.listdir(experiments_dir)
         # And no other process is working on an experiment
         if num_active_experiments == 0:
@@ -54,6 +40,11 @@ while experiments_file is not None:
             instance_id, request_id = get_instance_and_spot_request_id()
             terminate_instance_and_spot_request(instance_id, request_id)
     else:
+        experiments_from_queue = pd.read_csv(experiments_file).to_dict(
+            orient="records")
+
+        print("There are {0} experiments".format(len(experiments_from_queue)))
+
         for experiment in experiments_from_queue:
             try:
                 experiment_dir = "{0}/{1}".format(output_dir,
@@ -103,9 +94,3 @@ while experiments_file is not None:
         rm_command_exp_file = "rm {0}".format(experiments_file)
         print(rm_command_exp_file)
         os.system(rm_command_exp_file)
-
-        experiments_file = read_experiment_from_queue(
-            queue_url,
-            experiments_dir,
-            num_experiments=1
-        )
