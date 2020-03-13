@@ -26,7 +26,7 @@ General directory and input/output configuration can be setup in `config.json`.
 * **experiments** - Contains experiment csv files;
 * **model** - Contains the model files, including all agent classes, helpers, etc.
 * **reports** - Contains experiment outputs;
-
+* **scripts** - Contains bash scripts for AWS deployment.
 ## Running the Code
 
 Your `PYTHONPATH` variable should point to the root directory of the project.

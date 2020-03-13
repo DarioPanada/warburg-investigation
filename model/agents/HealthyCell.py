@@ -2,6 +2,11 @@ from panaxea.core.Steppables import Agent
 
 
 class HealthyCell(Agent):
+    """
+    A simple static agent that represents healthy tissues. It acts as a sink
+    of
+    oxygen and glucose.
+    """
 
     def __init__(self, model):
         super(HealthyCell, self).__init__()
