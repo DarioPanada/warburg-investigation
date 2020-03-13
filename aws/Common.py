@@ -2,8 +2,6 @@ import boto3
 import json
 import os
 
-from MessageWriter import write_message_to_queue
-
 
 def get_instance_and_spot_request_id():
     """
@@ -47,24 +45,11 @@ def terminate_instance_and_spot_request(instance_id, spot_request_id):
         SpotInstanceRequestIds=[spot_request_id]
     )
 
-    if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
-        write_message_to_queue(
-            config["aws"]["exceptions_queue"],
-            "instance",
-            str(response),
-            None
-        )
-        return
+    print(response)
 
     response = ec2.terminate_instances(
         DryRun=False,
         InstanceIds=[instance_id]
     )
 
-    if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
-        write_message_to_queue(
-            config["aws"]["exceptions_queue"],
-            "instance",
-            str(response),
-            None
-        )
+    print(response)

@@ -1,6 +1,6 @@
 {
   "experiments_dir": "experiments",
-  "experiment_file": "experiments_warburg.csv",
+  "experiment_file": "experiments_warburg_head.csv",
   "output_dir": "reports",
   "analysis_dir": "analysis",
   "mean_error_csv": "experiments_warburg.csv",
