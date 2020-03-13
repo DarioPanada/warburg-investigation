@@ -17,14 +17,12 @@ def get_instance_and_spot_request_id():
 
     Or None, None it the application is not running on an aws instance
     """
-    user = os.environ.get("user")
-
-    if user == "ec2-user":
+    try:
         ec2 = boto3.client('ec2')
         # Get id of current instance
         instance_id = os.popen(
             "wget -q -O - http://169.254.169.254/latest/meta-data/instance-id"
-            ).read()
+        ).read()
         # Get info of current instance from id
         instance_information = ec2.describe_instances(
             InstanceIds=[instance_id])
@@ -33,7 +31,7 @@ def get_instance_and_spot_request_id():
             'SpotInstanceRequestId']
 
         return instance_id, request_id
-    else:
+    except Exception as e:
         return None, None
 
 
