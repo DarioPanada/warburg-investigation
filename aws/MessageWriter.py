@@ -3,11 +3,11 @@ import datetime
 import random
 import time
 
-sqs = boto3.client('sqs')
+from Common import get_instance_and_spot_request_id
 
 
 def write_message_to_queue(queue_url, experiment_name, message_text,
-                           model):
+                           model=None):
     """
     Writes an experiment to an aws queue.
 
@@ -19,9 +19,18 @@ def write_message_to_queue(queue_url, experiment_name, message_text,
         Name of the experiment that raised the exception
     message_text : string
         Message to write
-    model : Model
-        Current model instance when the exception was raised.
+    model : Model, optional
+        Current model instance when the exception was raised. Optional,
+        default to none
     """
+    sqs = boto3.client('sqs')
+
+    instance_id, request_id = get_instance_and_spot_request_id()
+
+    if model is not None:
+        epoch = model.current_epoch
+    else:
+        epoch = None
 
     attributes = {
         "experiment_name": {
@@ -30,11 +39,19 @@ def write_message_to_queue(queue_url, experiment_name, message_text,
         },
         "epoch": {
             "DataType": "String",
-            "StringValue": str(model.current_epoch)
+            "StringValue": str(epoch)
         },
         "timestamp": {
             "DataType": "String",
             "StringValue": str(datetime.datetime.now().isoformat())
+        },
+        "instance_id": {
+            "DataType": "String",
+            "StringValue": str(instance_id)
+        },
+        "request_id": {
+            "DataType": "String",
+            "StringValue": str(request_id)
         }
     }
 

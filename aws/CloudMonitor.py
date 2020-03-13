@@ -48,8 +48,12 @@ def download_from_queue(queue_url, out_file):
         epoch = attributes["epoch"]["StringValue"]
         experiment_name = attributes["experiment_name"]["StringValue"]
         timestamp = attributes["timestamp"]["StringValue"]
+        request_id = attributes["request_id"]["StringValue"]
+        instance_id = attributes["instance_id"]["StringValue"]
 
-        message_as_list = [timestamp, experiment_name, epoch, body]
+        message_as_list = [instance_id, request_id, timestamp,
+                           experiment_name, epoch,
+                           body]
         messages_as_list.append(message_as_list)
 
         receipt = message['ReceiptHandle']
@@ -58,18 +62,23 @@ def download_from_queue(queue_url, out_file):
             QueueUrl=queue_url,
             ReceiptHandle=receipt
         )
-        print("Timestamp: {0} Experiment: {1}, Epoch: {2}, Body: {3}".format(
-            timestamp,
-            experiment_name,
-            epoch,
-            body
-        ))
+        print("Instance Id: {0}, Request Id: {1], Timestamp: {2}"
+              "Experiment: {3}, Epoch: {4},"
+              "Body: {5}".format(
+                instance_id,
+                request_id,
+                timestamp,
+                experiment_name,
+                epoch,
+                body
+                ))
 
     write_header = not os.path.isfile(out_file)
 
     with open(out_file, "a") as f:
         if write_header:
-            header = "timestamp,experiment_name,epoch,body\n"
+            header = "instance_id,request_id,timestamp,experiment_name," \
+                     "epoch,body\n"
             f.write(header)
 
         for message_as_list in messages_as_list:
