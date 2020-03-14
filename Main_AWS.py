@@ -1,6 +1,7 @@
 import json
 import os
 import pandas as pd
+import time
 
 from analyzers.SingleReportModelAnalyzers import get_post_execution_analysis
 from aws.Common import terminate_instance_and_spot_request, \
@@ -28,16 +29,25 @@ while True:
         num_experiments=1
     )
 
+    retry = 0
+    max_retry = 3
+    retry_interval = 5
+
     # If there are no further experiments on the queue
     if experiments_file is None:
         num_active_experiments = len([f for f in os.listdir(output_dir)
-                                  if "gitkeep" not in f])
+                                      if "gitkeep" not in f])
         # And no other process is working on an experiment
         if num_active_experiments == 0:
             # Terminate the instance and the associated spot request
-            instance_id, request_id = get_instance_and_spot_request_id()
-            terminate_instance_and_spot_request(instance_id, request_id)
+            if retry == max_retry:
+                instance_id, request_id = get_instance_and_spot_request_id()
+                terminate_instance_and_spot_request(instance_id, request_id)
+            else:
+                retry += 1
+                time.sleep(retry_interval)
     else:
+        retry = 0
         experiments_from_queue = pd.read_csv(experiments_file).to_dict(
             orient="records")
 

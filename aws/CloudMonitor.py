@@ -1,7 +1,6 @@
 import boto3
 import json
 import os
-import time
 
 sqs = boto3.client('sqs')
 
@@ -70,7 +69,7 @@ def download_from_queue(queue_url, out_file):
                 experiment_name,
                 epoch,
                 body
-              ))
+                ))
 
     write_header = not os.path.isfile(out_file)
 
@@ -91,7 +90,7 @@ if __name__ == "__main__":
         config = json.load(f)
         f.close()
 
-    time_interval = 1
+    time_interval = 0
 
     while True:
         download_from_queue(
@@ -103,5 +102,3 @@ if __name__ == "__main__":
             config["aws"]["exceptions_queue"],
             "cloud_logs/exceptions_queue.csv"
         )
-
-        time.sleep(time_interval)
