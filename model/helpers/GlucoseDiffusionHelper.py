@@ -209,7 +209,7 @@ class GlucoseDiffusionHelper(Helper):
                             a.causeOfDeath = {
                                 "cause": "Lack of glucose",
                                 "oxygenAtPos": 0,
-                                "warburg": a.warburgSwitch
+                                "warburg": a.warburg_switch
                             }
 
                 iteration = iteration + 1

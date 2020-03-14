@@ -88,7 +88,7 @@ class TipCell(EndothelialCell, object):
                 else:
                     new_pos = sorted_neigh.pop(0)[0]
 
-            self.MoveAgent(self.agent_env, new_pos, model)
+            self.move_agent(self.agent_env, new_pos, model)
 
             # Create tip cell at old position1
             t = TrunkCell(model, radius=self.radius)
