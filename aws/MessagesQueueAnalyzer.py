@@ -47,7 +47,6 @@ def summarize_execution(summary_file_path, max_epochs, out_file):
             2
         )
         group_head["progress"] = "{0}%".format(percentage_progress)
-
         group_head["completed"] = percentage_progress == 100 or group_head[
             "body"] in ["COMPLETED", "EXCEPTION"]
 
@@ -55,7 +54,7 @@ def summarize_execution(summary_file_path, max_epochs, out_file):
 
     experiment_summaries_df = pd.DataFrame(
         experiment_summaries
-    ).sort_values(by="progress", ascending=False)
+    ).sort_values(by="epoch", ascending=False)
 
     pd.set_option('display.max_colwidth', -1)
     pd.set_option('display.max_columns', None)

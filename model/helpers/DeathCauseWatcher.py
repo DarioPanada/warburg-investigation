@@ -30,7 +30,7 @@ class DeathCauseWatcher(Helper, object):
                             a.__class__.__name__ == "CancerCell" and a.dead]
 
             warburg_death_glucose = [c for c in cancer_cells if
-                                     c.warburg_switchand and c.cause_of_death[
+                                     c.warburg_switch and c.cause_of_death[
                                          "cause"] == "Lack of glucose"]
             warburg_death_oxygen = [c for c in cancer_cells if
                                     c.warburg_switch and c.cause_of_death[
