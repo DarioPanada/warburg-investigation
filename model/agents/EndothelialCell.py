@@ -93,7 +93,7 @@ class TipCell(EndothelialCell, object):
             # Create tip cell at old position1
             t = TrunkCell(model, radius=self.radius)
             t.add_agent_to_grid(self.agent_env, current_position, model)
-            model.schedule.agentsToSchedule.add(t)
+            model.schedule.agents_to_schedule.add(t)
 
     # A cell automatically sprouts if its radius is > 1
     def _decide_sprout_linear(self, tafConcentration):
