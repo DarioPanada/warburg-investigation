@@ -26,7 +26,7 @@ def download_from_queue(queue_url, out_file):
             'experiment_name'
             'epoch',
         ],
-        MaxNumberOfMessages=5,
+        MaxNumberOfMessages=20,
         MessageAttributeNames=[
             'All'
         ],

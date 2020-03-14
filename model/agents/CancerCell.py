@@ -89,7 +89,7 @@ class CancerCell(Agent, object):
                 target_pos = current_pos
             else:
                 moore_target = model.environments[
-                    self.agent_env_name].getLeastPopulatedMooreNeigh(
+                    self.agent_env_name].get_least_populated_moore_neigh(
                     current_pos)
                 if len(model.environments[self.agent_env_name].grid[
                            (moore_target[0], moore_target[1], moore_target[
