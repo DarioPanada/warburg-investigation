@@ -27,18 +27,20 @@ def summarize_execution(summary_file_path, max_epochs, out_file):
         ).sort_values(by="timestamp", ascending=False)
 
         group_head = experiment.iloc[0, :]
+        if len(experiment) > 1:
+            time_diff = group_head["timestamp"] - experiment.iloc[1, :][
+                "timestamp"]
 
-        time_diff = group_head["timestamp"] - experiment.iloc[1, :][
-            "timestamp"]
+            components = time_diff.components
+            time_diff_str = "{0}h{1}m{2}s".format(
+                components.hours,
+                components.minutes,
+                components.seconds
+            )
 
-        components = time_diff.components
-        time_diff_str = "{0}h{1}m{2}s".format(
-            components.hours,
-            components.minutes,
-            components.seconds
-        )
-
-        group_head["time_diff"] = time_diff_str
+            group_head["time_diff"] = time_diff_str
+        else:
+            group_head["time_diff"] = "N/A"
 
         percentage_progress = round(
             100 * (group_head["epoch"] * 1.) / (max_epochs - 1),
