@@ -60,6 +60,14 @@ while True:
                 model = generate_model(properties, num_epochs)
                 print("Simulating...")
                 model.run()
+
+                write_message_to_queue(
+                    config["aws"]["messages_queue"],
+                    model.properties["name"],
+                    "COMPLETED",
+                    model
+                )
+
                 if run_analysis:
                     print("Running analysis...")
                     get_post_execution_analysis(experiment_dir)

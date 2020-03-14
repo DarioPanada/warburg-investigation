@@ -37,7 +37,6 @@ def download_from_queue(queue_url, out_file):
     messages = response.get('Messages')
 
     if messages is None:
-        print("No messages found...")
         return
 
     messages_as_list = []
@@ -62,7 +61,7 @@ def download_from_queue(queue_url, out_file):
             QueueUrl=queue_url,
             ReceiptHandle=receipt
         )
-        print("Instance Id: {0}, Request Id: {1}, Timestamp: {2}"
+        print("Instance Id: {0}, Request Id: {1}, Timestamp: {2},"
               "Experiment: {3}, Epoch: {4},"
               "Body: {5}".format(
                 instance_id,
@@ -71,7 +70,7 @@ def download_from_queue(queue_url, out_file):
                 experiment_name,
                 epoch,
                 body
-                ))
+              ))
 
     write_header = not os.path.isfile(out_file)
 
@@ -95,13 +94,11 @@ if __name__ == "__main__":
     time_interval = 1
 
     while True:
-        print("Downloading messages...")
         download_from_queue(
             config["aws"]["messages_queue"],
             "cloud_logs/messages_queue.csv",
         )
 
-        print("Downloading exceptions...")
         download_from_queue(
             config["aws"]["exceptions_queue"],
             "cloud_logs/exceptions_queue.csv"

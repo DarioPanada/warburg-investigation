@@ -28,7 +28,7 @@ def get_instance_and_spot_request_id():
             'SpotInstanceRequestId']
 
         return instance_id, request_id
-    except Exception as e:
+    except Exception:
         return None, None
 
 
