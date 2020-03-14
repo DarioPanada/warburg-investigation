@@ -92,6 +92,12 @@ while True:
                     str(e),
                     model
                 )
+                write_message_to_queue(
+                    config["aws"]["messages_queue"],
+                    model.properties["name"],
+                    "EXCEPTION",
+                    model
+                )
                 rm_command_report = "rm -r {0}".format(experiment_dir)
                 print(rm_command_report)
                 os.system(rm_command_report)

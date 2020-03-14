@@ -30,8 +30,8 @@ def download_from_queue(queue_url, out_file):
         MessageAttributeNames=[
             'All'
         ],
-        VisibilityTimeout=1,
-        WaitTimeSeconds=0
+        VisibilityTimeout=10,
+        WaitTimeSeconds=10
     )
 
     messages = response.get('Messages')

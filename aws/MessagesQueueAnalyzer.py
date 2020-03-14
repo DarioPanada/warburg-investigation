@@ -49,7 +49,7 @@ def summarize_execution(summary_file_path, max_epochs, out_file):
         group_head["progress"] = "{0}%".format(percentage_progress)
 
         group_head["completed"] = percentage_progress == 100 or group_head[
-            "body"] == "COMPLETED"
+            "body"] in ["COMPLETED", "EXCEPTION"]
 
         experiment_summaries.append(group_head)
 

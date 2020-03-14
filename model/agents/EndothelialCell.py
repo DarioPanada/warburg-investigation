@@ -65,7 +65,7 @@ class TipCell(EndothelialCell, object):
                 taf_at_current_position:
             self.cell_age = 0
 
-            neigh = model.environments[self.agent_env].getMooreNeighbourhood(
+            neigh = model.environments[self.agent_env].get_moore_neighbourhood(
                 self.environment_positions[self.agent_env])
 
             # get taf concentration at each neighbouring position
@@ -114,7 +114,7 @@ class TipCell(EndothelialCell, object):
     # Assigns a score to each neighbourhood position where 0 = awful and 1 =
     # best and sum(scores) = 1
     def _rank_neighbours(self, model):
-        neigh = model.environments[self.agent_env].getMooreNeighbourhood(
+        neigh = model.environments[self.agent_env].get_moore_neighbourhood(
             self.environment_positions[self.agent_env])
 
         # get taf concentration at each neighbouring position
