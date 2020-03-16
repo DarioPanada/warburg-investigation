@@ -20,6 +20,7 @@ output_dir = config["output_dir"]
 num_epochs = config["num_epochs"]
 
 run_analysis = True
+retry = 0
 
 while True:
 
@@ -29,7 +30,6 @@ while True:
         num_experiments=1
     )
 
-    retry = 0
     max_retry = 3
     retry_interval = 5
 

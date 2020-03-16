@@ -143,7 +143,7 @@ class VegfDiffusionHelper(Helper):
                         a.dead = True
 
                         if a.__class__.__name__ == "CancerCell":
-                            a.cause_of_death= {
+                            a.cause_of_death = {
                                 "cause": "Lack of oxygen",
                                 "oxygenAtPos": 0,
                                 "warburg": a.warburg_switch
